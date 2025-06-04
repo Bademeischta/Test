@@ -20,6 +20,7 @@ Install requirements and run a short self-play session:
 ```bash
 pip install torch python-chess
 python -m chess_ai.self_play
+python -m chess_ai.evaluation
 ```
 
 Adjust hyperparameters in `chess_ai/config.py` to tune the behaviour.
