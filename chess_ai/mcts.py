@@ -3,13 +3,16 @@ from collections import defaultdict
 
 import numpy as np
 import torch
+import chess
 
 from .config import Config
+from .game_environment import GameEnvironment
+from .action_index import move_to_index
 
 
 class MCTSNode:
-    def __init__(self, state, parent=None):
-        self.state = state
+    def __init__(self, board: chess.Board, parent=None):
+        self.board = board
         self.parent = parent
         self.children = {}
         self.P = {}
@@ -20,7 +23,7 @@ class MCTSNode:
 
     def expand(self, policy, legal_moves):
         for move in legal_moves:
-            idx = move
+            idx = move_to_index(move)
             self.P[move] = policy[idx]
             self.N[move] = 0
             self.W[move] = 0.0
@@ -44,13 +47,17 @@ class MCTS:
         self.c_puct = c_puct
         self.num_simulations = num_simulations
 
-    def run(self, root_state):
-        root = MCTSNode(root_state)
-        state_tensor = torch.tensor(root_state, dtype=torch.float32, device=Config.DEVICE).unsqueeze(0)
+    def run(self, root_board: chess.Board):
+        root = MCTSNode(root_board.copy())
+        state_tensor = torch.tensor(
+            GameEnvironment.encode_board(root.board),
+            dtype=torch.float32,
+            device=Config.DEVICE,
+        ).unsqueeze(0)
         with torch.no_grad():
             log_p, v = self.network(state_tensor)
         policy = torch.exp(log_p[0]).cpu().numpy()
-        root.expand(policy, range(len(policy)))
+        root.expand(policy, list(root.board.legal_moves))
         moves = list(root.P.keys())
         if moves:
             noise = np.random.dirichlet([Config.DIRICHLET_ALPHA] * len(moves))
@@ -60,23 +67,29 @@ class MCTS:
         for _ in range(self.num_simulations):
             node = root
             search_path = []
-            while node.is_expanded:
+            while node.is_expanded and node.P:
                 move = node.select(self.c_puct)
                 search_path.append((node, move))
                 if move not in node.children:
-                    break
+                    node.board.push(move)
+                    child_board = node.board.copy()
+                    node.board.pop()
+                    node.children[move] = MCTSNode(child_board, parent=node)
                 node = node.children[move]
-            # evaluation
-            if not node.is_expanded:
-                state_tensor = torch.tensor(node.state, dtype=torch.float32, device=Config.DEVICE).unsqueeze(0)
-                with torch.no_grad():
-                    log_p, v = self.network(state_tensor)
-                policy = torch.exp(log_p[0]).cpu().numpy()
-                node.expand(policy, range(len(policy)))
+
+            state_tensor = torch.tensor(
+                GameEnvironment.encode_board(node.board),
+                dtype=torch.float32,
+                device=Config.DEVICE,
+            ).unsqueeze(0)
+            with torch.no_grad():
+                log_p, v = self.network(state_tensor)
+            policy = torch.exp(log_p[0]).cpu().numpy()
+            node.expand(policy, list(node.board.legal_moves))
             value = v.item()
             for parent, move in reversed(search_path):
                 parent.N[move] += 1
                 parent.W[move] += value
                 parent.Q[move] = parent.W[move] / parent.N[move]
                 value = -value
-        return {m: root.N[m] for m in root.P}
+        return {move_to_index(m): root.N[m] for m in root.P}
