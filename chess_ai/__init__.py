@@ -5,3 +5,4 @@ from .policy_value_net import PolicyValueNet
 from .mcts import MCTS
 from .replay_buffer import ReplayBuffer
 from .trainer import Trainer
+from .config import Config

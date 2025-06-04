@@ -13,3 +13,14 @@ The code implements basic components described in the included specification:
 This code is only a starting point and omits many details required for a
 production-ready system, but demonstrates the overall structure.
 
+## Usage
+
+Install requirements and run a short self-play session:
+
+```bash
+pip install torch python-chess
+python -m chess_ai.self_play
+```
+
+Adjust hyperparameters in `chess_ai/config.py` to tune the behaviour.
+

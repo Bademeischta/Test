@@ -5,7 +5,7 @@ import numpy as np
 class GameEnvironment:
     """Wrapper around python-chess for board management and encoding."""
 
-    NUM_CHANNELS = 17
+    NUM_CHANNELS = 18
 
     def __init__(self):
         self.board = chess.Board()
@@ -39,7 +39,7 @@ class GameEnvironment:
 
     @classmethod
     def encode_board(cls, board: chess.Board):
-        """Encode board into 8x8x17 numpy tensor."""
+        """Encode board into an 8x8x18 tensor of binary features."""
         planes = np.zeros((cls.NUM_CHANNELS, 8, 8), dtype=np.float32)
         piece_map = board.piece_map()
         for square, piece in piece_map.items():
@@ -60,4 +60,8 @@ class GameEnvironment:
         planes[14][:] = int(board.has_queenside_castling_rights(chess.WHITE))
         planes[15][:] = int(board.has_kingside_castling_rights(chess.BLACK))
         planes[16][:] = int(board.has_queenside_castling_rights(chess.BLACK))
+        if board.ep_square is not None:
+            row = board.ep_square // 8
+            col = board.ep_square % 8
+            planes[17][row][col] = 1
         return planes

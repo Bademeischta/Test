@@ -1,9 +1,11 @@
 import random
 from collections import deque
 
+from .config import Config
+
 
 class ReplayBuffer:
-    def __init__(self, capacity=100000):
+    def __init__(self, capacity: int = Config.REPLAY_BUFFER_SIZE):
         self.buffer = deque(maxlen=capacity)
 
     def add(self, state, policy, value):

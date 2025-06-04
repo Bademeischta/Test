@@ -1,14 +1,16 @@
 import chess
+
 from .game_environment import GameEnvironment
 from .mcts import MCTS
+from .config import Config
 
 
-def evaluate(net_a, net_b, num_games=10, num_simulations=100):
+def evaluate(net_a, net_b, num_games: int = 10, num_simulations: int = Config.NUM_SIMULATIONS):
     stats = {"wins": 0, "losses": 0, "draws": 0}
     for g in range(num_games):
         env = GameEnvironment()
         current_player = 1
-        nets = [net_a, net_b]
+        nets = [net_a.to(Config.DEVICE), net_b.to(Config.DEVICE)]
         while True:
             net = nets[0] if env.board.turn == chess.WHITE else nets[1]
             mcts = MCTS(net, num_simulations=num_simulations)

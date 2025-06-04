@@ -3,10 +3,13 @@ import torch
 
 from .game_environment import GameEnvironment
 from .mcts import MCTS
+from .config import Config
 
 
-def run_self_play(network, num_simulations=50):
+def run_self_play(network, num_simulations: int = Config.NUM_SIMULATIONS):
+    """Generate self-play data from games played by the network."""
     env = GameEnvironment()
+    network = network.to(Config.DEVICE)
     mcts = MCTS(network, num_simulations=num_simulations)
     state = env.reset()
     trajectory = []

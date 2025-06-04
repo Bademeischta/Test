@@ -4,6 +4,8 @@ from collections import defaultdict
 import numpy as np
 import torch
 
+from .config import Config
+
 
 class MCTSNode:
     def __init__(self, state, parent=None):
@@ -37,18 +39,23 @@ class MCTSNode:
 
 
 class MCTS:
-    def __init__(self, network, c_puct=1.5, num_simulations=800):
-        self.network = network
+    def __init__(self, network, c_puct: float = Config.C_PUCT, num_simulations: int = Config.NUM_SIMULATIONS):
+        self.network = network.to(Config.DEVICE)
         self.c_puct = c_puct
         self.num_simulations = num_simulations
 
     def run(self, root_state):
         root = MCTSNode(root_state)
-        state_tensor = torch.tensor(root_state, dtype=torch.float32).unsqueeze(0)
+        state_tensor = torch.tensor(root_state, dtype=torch.float32, device=Config.DEVICE).unsqueeze(0)
         with torch.no_grad():
             log_p, v = self.network(state_tensor)
         policy = torch.exp(log_p[0]).cpu().numpy()
         root.expand(policy, range(len(policy)))
+        moves = list(root.P.keys())
+        if moves:
+            noise = np.random.dirichlet([Config.DIRICHLET_ALPHA] * len(moves))
+            for idx, m in enumerate(moves):
+                root.P[m] = (1 - Config.DIRICHLET_EPSILON) * root.P[m] + Config.DIRICHLET_EPSILON * noise[idx]
 
         for _ in range(self.num_simulations):
             node = root
@@ -61,7 +68,7 @@ class MCTS:
                 node = node.children[move]
             # evaluation
             if not node.is_expanded:
-                state_tensor = torch.tensor(node.state, dtype=torch.float32).unsqueeze(0)
+                state_tensor = torch.tensor(node.state, dtype=torch.float32, device=Config.DEVICE).unsqueeze(0)
                 with torch.no_grad():
                     log_p, v = self.network(state_tensor)
                 policy = torch.exp(log_p[0]).cpu().numpy()

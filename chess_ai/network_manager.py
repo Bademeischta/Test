@@ -3,9 +3,11 @@ from glob import glob
 
 import torch
 
+from .config import Config
+
 
 class NetworkManager:
-    def __init__(self, checkpoint_dir="checkpoints"):
+    def __init__(self, checkpoint_dir: str = Config.CHECKPOINT_DIR):
         self.checkpoint_dir = checkpoint_dir
         os.makedirs(self.checkpoint_dir, exist_ok=True)
 

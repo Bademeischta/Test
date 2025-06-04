@@ -36,6 +36,18 @@ class PolicyValueNet(nn.Module):
         self.fc_value1 = nn.Linear(1 * 8 * 8, 256)
         self.fc_value2 = nn.Linear(256, 1)
 
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                nn.init.kaiming_normal_(m.weight, mode="fan_out", nonlinearity="relu")
+                if m.bias is not None:
+                    nn.init.constant_(m.bias, 0)
+            elif isinstance(m, nn.Linear):
+                nn.init.kaiming_uniform_(m.weight, a=0.01)
+                nn.init.constant_(m.bias, 0)
+            elif isinstance(m, nn.BatchNorm2d):
+                nn.init.constant_(m.weight, 1)
+                nn.init.constant_(m.bias, 0)
+
     def forward(self, x):
         x = F.relu(self.bn0(self.conv0(x)))
         for block in self.res_blocks:
