@@ -7,6 +7,7 @@ find_package(Threads REQUIRED)
 
 add_library(engine
     engine/bitboard.cpp
+    engine/position.cpp
     engine/movegen.cpp
     engine/nnue_eval.cpp
     engine/search.cpp
@@ -17,3 +18,6 @@ target_link_libraries(engine PUBLIC Threads::Threads)
 
 add_executable(superengine main.cpp)
 target_link_libraries(superengine PRIVATE engine)
+
+add_executable(perft_test tests/perft.cpp)
+target_link_libraries(perft_test PRIVATE engine)
