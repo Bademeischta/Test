@@ -15,6 +15,22 @@ class Tensor:
         return self.data
     def __getitem__(self, idx):
         return Tensor(self.data[idx])
+    def view(self, *shape):
+        """Return a reshaped tensor if possible, otherwise ``self``.
+
+        The implementation is intentionally minimal and only supports
+        reshaping via ``numpy.reshape``.  If ``self.data`` cannot be
+        converted to a ``numpy`` array or the new shape is incompatible,
+        the original tensor is returned unchanged.
+        """
+        if not shape:
+            return self
+        try:
+            import numpy as np
+            new_data = np.array(self.data).reshape(*shape)
+        except Exception:
+            return self
+        return Tensor(new_data)
     def item(self):
         import numpy as np
         if isinstance(self.data, (list, tuple, np.ndarray)):
