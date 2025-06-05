@@ -10,9 +10,20 @@ Position::Position(const std::string& fen) {
     side=WHITE;
 
     std::istringstream ss(fen);
-    std::string board, stm;
-    ss >> board >> stm;
+    std::string board, stm, castling, ep;
+    ss >> board >> stm >> castling >> ep >> halfmove_clock >> fullmove_number;
     side = (stm=="w"?WHITE:BLACK);
+    castling_rights = 0;
+    if(castling.find('K') != std::string::npos) castling_rights |= 1;
+    if(castling.find('Q') != std::string::npos) castling_rights |= 2;
+    if(castling.find('k') != std::string::npos) castling_rights |= 4;
+    if(castling.find('q') != std::string::npos) castling_rights |= 8;
+    en_passant = -1;
+    if(ep != "-" && ep.size()==2){
+        int file = ep[0]-'a';
+        int rank = ep[1]-'1';
+        en_passant = rank*8 + file;
+    }
 
     int sq=56; // start at a8
     for(char ch : board){
@@ -40,4 +51,15 @@ Position::Position(const std::string& fen) {
         occupied_bb[c]=occ;
     }
     all_occupied = occupied_bb[WHITE]|occupied_bb[BLACK];
+}
+
+Piece Position::piece_on(int sq) const {
+    Bitboard mask = 1ULL<<sq;
+    for(int c=0;c<2;++c){
+        for(int p=0;p<PIECE_NB;++p){
+            if(piece_bb[c][p] & mask)
+                return static_cast<Piece>(p);
+        }
+    }
+    return PIECE_NB; // invalid
 }
