@@ -11,7 +11,11 @@ class GameEnvironment:
         self.board = chess.Board()
 
     def reset(self):
-        self.board.reset()
+        if hasattr(self.board, "reset"):
+            self.board.reset()
+        else:
+            # Fallback for older python-chess versions
+            self.board.reset_board()
         return self.get_state()
 
     def get_state(self):
