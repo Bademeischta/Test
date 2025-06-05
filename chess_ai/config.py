@@ -20,6 +20,7 @@ class Config:
     NUM_FILTERS = 256
     LEARNING_RATE = 0.01
     BATCH_SIZE = 32
+    FILTER_QUIET_POSITIONS = True
     WEIGHT_DECAY = 1e-4
     MOMENTUM = 0.9
 
