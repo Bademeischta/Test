@@ -21,7 +21,13 @@ class ResidualBlock(nn.Module):
 
 
 class PolicyValueNet(nn.Module):
-    def __init__(self, in_channels: int, action_size: int, num_blocks: int = 19, filters: int = 256):
+    def __init__(
+        self,
+        in_channels: int,
+        action_size: int,
+        num_blocks: int = 19,
+        filters: int = 256,
+    ):
         super().__init__()
         self.conv0 = nn.Conv2d(in_channels, filters, kernel_size=3, padding=1)
         self.bn0 = nn.BatchNorm2d(filters)

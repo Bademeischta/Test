@@ -5,7 +5,12 @@ from .mcts import MCTS
 from .config import Config
 
 
-def evaluate(net_a, net_b, num_games: int = 10, num_simulations: int = Config.NUM_SIMULATIONS):
+def evaluate(
+    net_a,
+    net_b,
+    num_games: int = 10,
+    num_simulations: int = Config.NUM_SIMULATIONS,
+):
     stats = {"wins": 0, "losses": 0, "draws": 0}
     for g in range(num_games):
         env = GameEnvironment()
@@ -21,9 +26,13 @@ def evaluate(net_a, net_b, num_games: int = 10, num_simulations: int = Config.NU
             if done:
                 if reward == 1:
                     stats["wins"] += 1 if env.board.turn == chess.BLACK else 0
-                    stats["losses"] += 1 if env.board.turn == chess.WHITE else 0
+                    stats["losses"] += (
+                        1 if env.board.turn == chess.WHITE else 0
+                    )
                 elif reward == -1:
-                    stats["losses"] += 1 if env.board.turn == chess.BLACK else 0
+                    stats["losses"] += (
+                        1 if env.board.turn == chess.BLACK else 0
+                    )
                     stats["wins"] += 1 if env.board.turn == chess.WHITE else 0
                 else:
                     stats["draws"] += 1

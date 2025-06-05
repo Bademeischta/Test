@@ -22,4 +22,3 @@ class Config:
     BATCH_SIZE = 32
     WEIGHT_DECAY = 1e-4
     MOMENTUM = 0.9
-

@@ -2,7 +2,10 @@
 import chess, chess.pgn, numpy as np, sys
 
 def is_quiet(board):
-    return not board.is_check() and (not board.is_capture(board.peek()) if board.move_stack else True)
+    return (
+        not board.is_check()
+        and (not board.is_capture(board.peek()) if board.move_stack else True)
+    )
 
 X, y = [], []
 for pgn in sys.argv[1:]:
