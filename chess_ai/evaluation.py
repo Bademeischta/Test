@@ -3,6 +3,7 @@ import chess
 from .game_environment import GameEnvironment
 from .mcts import MCTS
 from .config import Config
+from .action_index import index_to_move
 
 
 def evaluate(net_a, net_b, num_games: int = 10, num_simulations: int = Config.NUM_SIMULATIONS):
@@ -14,9 +15,9 @@ def evaluate(net_a, net_b, num_games: int = 10, num_simulations: int = Config.NU
         while True:
             net = nets[0] if env.board.turn == chess.WHITE else nets[1]
             mcts = MCTS(net, num_simulations=num_simulations)
-            visit_counts = mcts.run(env.get_state())
+            visit_counts = mcts.run(env.board)
             best_move_idx = max(visit_counts, key=visit_counts.get)
-            move = list(env.legal_moves())[best_move_idx]
+            move = index_to_move(best_move_idx)
             _, reward, done = env.step(move)
             if done:
                 if reward == 1:
