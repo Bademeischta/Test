@@ -26,7 +26,17 @@ class Module(L.LightningModule):
 data = torch.utils.data.TensorDataset(
     torch.from_numpy(np.load("fen_vec.npy")),
     torch.from_numpy(np.load("score.npy")).unsqueeze(1))
-loader = torch.utils.data.DataLoader(data, batch_size=8192, shuffle=True, num_workers=4)
-trainer = L.Trainer(max_epochs=4, precision="bf16-mixed", devices=8, accelerator="gpu")
+loader = torch.utils.data.DataLoader(
+    data,
+    batch_size=8192,
+    shuffle=True,
+    num_workers=4,
+)
+trainer = L.Trainer(
+    max_epochs=4,
+    precision="bf16-mixed",
+    devices=8,
+    accelerator="gpu",
+)
 trainer.fit(Module(), loader)
 torch.save(trainer.model.net.state_dict(), "../nets/tiny_v1.nnue")

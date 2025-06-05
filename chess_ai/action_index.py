@@ -6,7 +6,10 @@ ACTION_SIZE = 64 * 64 * len(PROMOTIONS)
 
 def move_to_index(move: chess.Move) -> int:
     promo_idx = PROMOTIONS.index(move.promotion)
-    return ((move.from_square * 64) + move.to_square) * len(PROMOTIONS) + promo_idx
+    return (
+        ((move.from_square * 64) + move.to_square) * len(PROMOTIONS)
+        + promo_idx
+    )
 
 
 def index_to_move(index: int) -> chess.Move:
