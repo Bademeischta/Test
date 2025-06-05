@@ -1,6 +1,5 @@
 """Training utilities for the chess network."""
 
-from typing import Iterable
 
 import torch
 from torch.utils.data import DataLoader, TensorDataset
@@ -9,7 +8,14 @@ from .config import Config
 
 
 class Trainer:
-    def __init__(self, network, buffer, optimizer, batch_size: int = Config.BATCH_SIZE, epochs: int = 1):
+    def __init__(
+        self,
+        network,
+        buffer,
+        optimizer,
+        batch_size: int = Config.BATCH_SIZE,
+        epochs: int = 1,
+    ):
         self.network = network.to(Config.DEVICE)
         self.buffer = buffer
         self.optimizer = optimizer
@@ -17,14 +23,22 @@ class Trainer:
         self.epochs = epochs
 
     def train(self):
-        """Train the network for one epoch using data from the replay buffer."""
+        """
+        Train the network for one epoch using data from the replay buffer.
+        """
 
         if len(self.buffer) < self.batch_size:
             return
         states, policies, values = self.buffer.sample(self.batch_size)
-        states = torch.tensor(states, dtype=torch.float32, device=Config.DEVICE)
-        policies = torch.tensor(policies, dtype=torch.float32, device=Config.DEVICE)
-        values = torch.tensor(values, dtype=torch.float32, device=Config.DEVICE)
+        states = torch.tensor(
+            states, dtype=torch.float32, device=Config.DEVICE
+        )
+        policies = torch.tensor(
+            policies, dtype=torch.float32, device=Config.DEVICE
+        )
+        values = torch.tensor(
+            values, dtype=torch.float32, device=Config.DEVICE
+        )
         dataset = TensorDataset(states, policies, values)
         loader = DataLoader(dataset, batch_size=self.batch_size, shuffle=True)
         for _ in range(self.epochs):
