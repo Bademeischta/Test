@@ -46,9 +46,8 @@ entsteht ein rauschärmerer Datensatz.
 
 ## Tests
 
-```bash
-PYTHONPATH=. pytest -q
-```
+
+
 
 Die Tests prüfen das Board-Encoding, MCTS, Replay Buffer und das Verhalten von
 `is_quiet_move()`.
