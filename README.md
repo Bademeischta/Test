@@ -25,3 +25,25 @@ python -m chess_ai.evaluation
 
 Adjust hyperparameters in `chess_ai/config.py` to tune the behaviour.
 
+## Building the C++ Engine
+
+The repository also includes a lightweight C++ engine in `superengine/`. Create
+a build directory and compile it with CMake:
+
+```bash
+mkdir build && cd build
+cmake .. && make
+```
+
+This will generate the `superengine` executable and its libraries.
+
+## Running Unit Tests
+
+After building the project you can run the C++ unit tests using:
+
+```bash
+ctest
+```
+
+All tests located under `superengine/tests` will be executed.
+
