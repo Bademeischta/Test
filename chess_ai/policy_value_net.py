@@ -21,11 +21,19 @@ class ResidualBlock(nn.Module):
 
 
 class PolicyValueNet(nn.Module):
-    def __init__(self, in_channels: int, action_size: int, num_blocks: int = 19, filters: int = 256):
+    def __init__(
+        self,
+        in_channels: int,
+        action_size: int,
+        num_blocks: int = 19,
+        filters: int = 256,
+    ):
         super().__init__()
         self.conv0 = nn.Conv2d(in_channels, filters, kernel_size=3, padding=1)
         self.bn0 = nn.BatchNorm2d(filters)
-        self.res_blocks = nn.ModuleList([ResidualBlock(filters) for _ in range(num_blocks)])
+        self.res_blocks = nn.ModuleList(
+            [ResidualBlock(filters) for _ in range(num_blocks)]
+        )
         # policy head
         self.conv_policy = nn.Conv2d(filters, 2, kernel_size=1)
         self.bn_policy = nn.BatchNorm2d(2)
@@ -38,7 +46,9 @@ class PolicyValueNet(nn.Module):
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
-                nn.init.kaiming_normal_(m.weight, mode="fan_out", nonlinearity="relu")
+                nn.init.kaiming_normal_(
+                    m.weight, mode="fan_out", nonlinearity="relu"
+                )
                 if m.bias is not None:
                     nn.init.constant_(m.bias, 0)
             elif isinstance(m, nn.Linear):
