@@ -1,5 +1,13 @@
-import ray, subprocess, os, random, uuid
+import ray
+import subprocess
+import os
+import random
+import uuid
+
+
 ray.init(address="auto")
+
+
 @ray.remote
 def selfplay_game(net_path):
     seed = random.getrandbits(32)
@@ -8,8 +16,10 @@ def selfplay_game(net_path):
            "--net", net_path, "--games", "1"]
     p = subprocess.run(cmd, capture_output=True, text=True)
     os.makedirs("games", exist_ok=True)
-    with open(f"games/{game_id}.pgn", "w") as f: f.write(p.stdout)
+    with open(f"games/{game_id}.pgn", "w") as f:
+        f.write(p.stdout)
     return 1
+
 
 futures = [selfplay_game.remote("nets/tiny_v1.nnue") for _ in range(10000)]
 ray.get(futures)
