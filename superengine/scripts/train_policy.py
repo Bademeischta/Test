@@ -56,7 +56,13 @@ class Module(L.LightningModule):
         loss_p = -(p_target * log_p).sum(dim=1).mean()
         loss_v = self.loss_mse(v.view(-1), v_target)
         loss = loss_p + loss_v
-        self.log_dict({"loss": loss, "policy_loss": loss_p, "value_loss": loss_v})
+        self.log_dict(
+            {
+                "loss": loss,
+                "policy_loss": loss_p,
+                "value_loss": loss_v,
+            }
+        )
         return loss
 
     def configure_optimizers(self):
@@ -66,7 +72,13 @@ class Module(L.LightningModule):
 def main():
     dataset = load_games("games")
     loader = DataLoader(dataset, batch_size=256, shuffle=True, num_workers=4)
-    trainer = L.Trainer(max_epochs=5, devices=1 if not torch.cuda.is_available() else torch.cuda.device_count(), accelerator="gpu" if torch.cuda.is_available() else "cpu")
+    trainer = L.Trainer(
+        max_epochs=5,
+        devices=(
+            1 if not torch.cuda.is_available() else torch.cuda.device_count()
+        ),
+        accelerator="gpu" if torch.cuda.is_available() else "cpu",
+    )
     trainer.fit(Module(), loader)
     os.makedirs("../nets", exist_ok=True)
     torch.save(trainer.model.net.state_dict(), "../nets/gpu_policy.onnx")
