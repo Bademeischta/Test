@@ -21,7 +21,9 @@ def run_self_play(network, num_simulations: int = Config.NUM_SIMULATIONS):
             pi[idx] = c
         best_move_idx = max(visit_counts, key=visit_counts.get)
         move = index_to_move(best_move_idx)
-        trajectory.append((state, pi, current_player))
+        is_quiet = env.is_quiet_move(move)
+        if not Config.FILTER_QUIET_POSITIONS or is_quiet:
+            trajectory.append((state, pi, current_player))
         state, reward, done = env.step(move)
         if done:
             for s, p, player in trajectory:

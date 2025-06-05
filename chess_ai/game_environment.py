@@ -11,7 +11,11 @@ class GameEnvironment:
         self.board = chess.Board()
 
     def reset(self):
-        self.board.reset()
+        if hasattr(self.board, "reset"):
+            self.board.reset()
+        else:
+            # Fallback for older python-chess versions
+            self.board.reset_board()
         return self.get_state()
 
     def get_state(self):
@@ -36,6 +40,15 @@ class GameEnvironment:
 
     def undo(self):
         self.board.pop()
+
+    def is_quiet_move(self, move: chess.Move) -> bool:
+        """Return True if ``move`` is non-capturing, non-checking and current
+        player is not already in check."""
+        return (
+            not self.board.is_capture(move)
+            and not self.board.gives_check(move)
+            and not self.board.is_check()
+        )
 
     @classmethod
     def encode_board(cls, board: chess.Board):
