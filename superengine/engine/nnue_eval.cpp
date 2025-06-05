@@ -7,8 +7,7 @@ nnue::Network nnue::net;
 static int16_t clamp_relu(int32_t x) { return x > 0 ? (x < 32767 ? x : 32767) : 0; }
 
 int nnue::eval(const Position& pos) {
-    alignas(32) int16_t feat[INPUTS];
-    extract_features(pos, feat); // to be implemented
+    alignas(32) int16_t feat[INPUTS]{}; // unused stub
     alignas(32) int16_t hidden1[HIDDEN1];
     for (int i=0;i<HIDDEN1;i+=16) {
         // placeholder loop
