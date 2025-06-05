@@ -35,11 +35,12 @@ mkdir build && cd build
 cmake .. && make
 ```
 
-This will generate the `superengine` executable and its libraries.
+This produces the `superengine` executable and its libraries.
 
 ## Running Unit Tests
 
-After building the project you can run the C++ unit tests using:
+After building the project you can run the C++ unit tests from the build
+directory using:
 
 ```bash
 ctest
