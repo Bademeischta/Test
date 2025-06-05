@@ -1,12 +1,20 @@
 #pragma once
+#include <string>
 #include "bitboard.h"
 
-enum Color { WHITE, BLACK };
-enum Piece { PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING };
+enum Color { WHITE = 0, BLACK = 1 };
+enum Piece { PAWN = 0, KNIGHT, BISHOP, ROOK, QUEEN, KING, PIECE_NB };
 
 struct Position {
-    Bitboard pieces(Piece pc, Color c) const { return 0; }
-    Color side_to_move() const { return WHITE; }
-    Bitboard occupied() const { return 0; }
-    void do_move(const movegen::Move& m) {}
+    Bitboard piece_bb[2][PIECE_NB]{}; // [color][piece]
+    Bitboard occupied_bb[2]{};
+    Bitboard all_occupied{};
+    Color side{};
+
+    Position() = default;
+    explicit Position(const std::string& fen);
+
+    Bitboard pieces(Piece pc, Color c) const { return piece_bb[c][pc]; }
+    Bitboard occupied() const { return all_occupied; }
+    Color side_to_move() const { return side; }
 };
