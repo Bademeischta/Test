@@ -1,2 +1,5 @@
 __pycache__/
 *.pyc
+
+superengine/build/
+chess_ai.egg-info/
