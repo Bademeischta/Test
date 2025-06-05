@@ -3,6 +3,32 @@ class Tensor:
         self.data = data
     def to(self, *args, **kwargs):
         return self
+    def unsqueeze(self, dim):
+        return self
+    def size(self, dim=None):
+        if dim is None:
+            return len(self.data)
+        return self.data.shape[dim]
+    def cpu(self):
+        return self
+    def numpy(self):
+        return self.data
+    def __getitem__(self, idx):
+        return Tensor(self.data[idx])
+    def item(self):
+        import numpy as np
+        if isinstance(self.data, (list, tuple, np.ndarray)):
+            return float(np.array(self.data).flatten()[0])
+        return float(self.data)
+
+class _NoGrad:
+    def __enter__(self):
+        return self
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        pass
+
+def no_grad():
+    return _NoGrad()
 
 class Module:
     def __init__(self, *args, **kwargs):
@@ -31,9 +57,27 @@ class ModuleList(list):
         super().__init__(iterable)
 
 def tensor(data, **kwargs):
-    return data
+    return Tensor(data)
 
 def tanh(x):
+    return x
+
+# minimal dtype constants used in tests
+float32 = 'float32'
+float64 = 'float64'
+
+def log_softmax(x, dim=None):
+    return x
+
+def ones(*shape):
+    import numpy as np
+    return Tensor(np.ones(shape))
+
+def zeros(*shape):
+    import numpy as np
+    return Tensor(np.zeros(shape))
+
+def exp(x):
     return x
 
 import types
