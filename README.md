@@ -47,7 +47,7 @@ entsteht ein rauschärmerer Datensatz.
 ## Tests
 
 ```bash
-pytest -q
+PYTHONPATH=. pytest -q
 ```
 
 Die Tests prüfen das Board-Encoding, MCTS, Replay Buffer und das Verhalten von
