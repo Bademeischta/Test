@@ -1,5 +1,4 @@
 import numpy as np
-import torch
 
 from .game_environment import GameEnvironment
 from .mcts import MCTS
