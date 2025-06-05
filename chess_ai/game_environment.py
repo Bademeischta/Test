@@ -37,6 +37,15 @@ class GameEnvironment:
     def undo(self):
         self.board.pop()
 
+    def is_quiet_move(self, move: chess.Move) -> bool:
+        """Return True if ``move`` is non-capturing, non-checking and current
+        player is not already in check."""
+        return (
+            not self.board.is_capture(move)
+            and not self.board.gives_check(move)
+            and not self.board.is_check()
+        )
+
     @classmethod
     def encode_board(cls, board: chess.Board):
         """Encode board into an 8x8x18 tensor of binary features."""
