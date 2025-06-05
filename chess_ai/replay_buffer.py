@@ -1,6 +1,4 @@
-import random
 from collections import deque
-from typing import Sequence
 
 import numpy as np
 
@@ -24,7 +22,9 @@ class ReplayBuffer:
         if batch_size > len(self.buffer):
             raise ValueError("Batch size larger than buffer")
 
-        indices = np.random.choice(len(self.buffer), size=batch_size, replace=False)
+        indices = np.random.choice(
+            len(self.buffer), size=batch_size, replace=False
+        )
         indices = np.sort(indices)
         batch = [self.buffer[i] for i in indices]
         states, policies, values = zip(*batch)
