@@ -19,7 +19,7 @@ int Search::pv_node(Position& pos, int alpha, int beta, int depth) {
     int eval = nnue::eval(pos);
     if (eval >= beta) return eval;
 
-    auto moves = movegen::generate_pseudo_legal(pos);
+    auto moves = movegen::generate_moves(pos);
     for (size_t i = 0; i < moves.size(); ++i) {
         Position next = pos;
         next.do_move(moves[i]);
@@ -39,7 +39,7 @@ int Search::quiesce(Position& pos, int alpha, int beta){
     if(stand_pat >= beta) return beta;
     if(stand_pat > alpha) alpha = stand_pat;
 
-    auto moves = movegen::generate_pseudo_legal(pos);
+    auto moves = movegen::generate_moves(pos);
     for(const auto& m: moves){
         Piece capture = pos.piece_on(m.to);
         if(capture == PIECE_NB) continue; // only captures
