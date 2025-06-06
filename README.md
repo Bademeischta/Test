@@ -25,10 +25,17 @@ demonstrieren.
 ## Installation
 
 ```bash
-pip install -r requirements.txt
+./scripts/install.sh
 ```
 
-Optional kann die C++-Engine in `superengine/` separat mit CMake gebaut werden.
+Dies installiert alle Python-Abhängigkeiten und baut standardmäßig auch die C++
+Engine in `superengine/`.
+Wer nur die Python-Funktionalität benötigt, kann stattdessen einfach
+
+```bash
+pip install -r requirements.txt
+```
+ausführen und den Engine-Build überspringen.
 
 ## Verwendung
 
@@ -37,6 +44,15 @@ Kurzes Selbstspiel und Evaluierung:
 ```bash
 python -m chess_ai.self_play
 python -m chess_ai.evaluation
+```
+
+Beispielausgabe von `python -m chess_ai.self_play`:
+
+```text
+Step 0: value=0.00
+Step 1: value=-0.00
+Step 2: value=0.00
+Self-play finished successfully.
 ```
 
 Alle Parameter befinden sich in `chess_ai/config.py`. Das Flag
@@ -83,7 +99,7 @@ Repository verfolgen kannst.
 - [ ] `Position::in_check(Color)` komplettieren
 - [ ] En‑Passant‑Logik ergänzen
 - [ ] King‑Moves und Rochade umsetzen
-- [ ] `generate_all_pseudo` und `generate_legal_moves` vereinen
+- [x] `generate_all_pseudo` und `generate_legal_moves` vereinen -> `generate_moves`
 
 #### 1.2 Suchkern (Alpha‑Beta, Quiescence, TT, LMR, Null‑Move)
 
