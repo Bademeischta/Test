@@ -22,8 +22,19 @@ TEST_CASE("Knight on d4", "[movegen]") {
     REQUIRE(moves.size() == 8);
 }
 
+codex/implement-en-passant-move-generation
+TEST_CASE("En passant generation", "[movegen]") {
+    Position pos("rnbqkb1r/ppp1pppp/5n2/3pP3/8/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 3");
+    auto moves = movegen::generate_pseudo_legal(pos);
+    bool found = false;
+    for(const auto& m : moves)
+        if(m.from == 36 && m.to == 43)
+            found = true;
+    REQUIRE(found);
+
 TEST_CASE("Start position legal move count", "[movegen]") {
     Position pos("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     auto moves = movegen::generate_moves(pos);
     REQUIRE(moves.size() == 20);
+main
 }

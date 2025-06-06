@@ -58,8 +58,13 @@ void generate_pawn_moves(const Position& pos, MoveList& out){
         out.push_back({from,to,0});
     }
     // captures left/right
-    Bitboard left = ((wp & ~bb::FILE_A)<<7) & occB;
-    Bitboard right = ((wp & ~bb::FILE_H)<<9) & occB;
+    Bitboard left_diag = (wp & ~bb::FILE_A) << 7;
+    Bitboard right_diag = (wp & ~bb::FILE_H) << 9;
+    Bitboard left = left_diag & occB;
+    Bitboard right = right_diag & occB;
+    Bitboard ep_target = pos.en_passant==-1 ? 0ULL : (1ULL << pos.en_passant);
+    Bitboard ep_left = left_diag & ep_target;
+    Bitboard ep_right = right_diag & ep_target;
     Bitboard promo_left = left & promo_rank;
     Bitboard normal_left = left & ~promo_rank;
     while(normal_left){
@@ -83,6 +88,16 @@ void generate_pawn_moves(const Position& pos, MoveList& out){
         int to = bb::pop_lsb(promo_right);
         int from = to-9;
         for(int p=1;p<=4;++p) out.push_back({from,to,p});
+    }
+    while(ep_left){
+        int to = bb::pop_lsb(ep_left);
+        int from = to-7;
+        out.push_back({from,to,0});
+    }
+    while(ep_right){
+        int to = bb::pop_lsb(ep_right);
+        int from = to-9;
+        out.push_back({from,to,0});
     }
     }
 
@@ -110,8 +125,13 @@ void generate_pawn_moves(const Position& pos, MoveList& out){
         int from=to+16;
         out.push_back({from,to,0});
     }
-    Bitboard leftB = ((bp & ~bb::FILE_H)>>9) & occW;
-    Bitboard rightB = ((bp & ~bb::FILE_A)>>7) & occW;
+    Bitboard left_diagB = (bp & ~bb::FILE_H) >> 9;
+    Bitboard right_diagB = (bp & ~bb::FILE_A) >> 7;
+    Bitboard leftB = left_diagB & occW;
+    Bitboard rightB = right_diagB & occW;
+    Bitboard ep_targetB = pos.en_passant==-1 ? 0ULL : (1ULL << pos.en_passant);
+    Bitboard ep_leftB = left_diagB & ep_targetB;
+    Bitboard ep_rightB = right_diagB & ep_targetB;
     Bitboard promo_leftB = leftB & promo_rankB;
     Bitboard normal_leftB = leftB & ~promo_rankB;
     while(normal_leftB){
@@ -124,6 +144,11 @@ void generate_pawn_moves(const Position& pos, MoveList& out){
         int from=to+9;
         for(int p=1;p<=4;++p) out.push_back({from,to,p});
     }
+    while(ep_leftB){
+        int to = bb::pop_lsb(ep_leftB);
+        int from = to+9;
+        out.push_back({from,to,0});
+    }
     Bitboard promo_rightB = rightB & promo_rankB;
     Bitboard normal_rightB = rightB & ~promo_rankB;
     while(normal_rightB){
@@ -135,6 +160,11 @@ void generate_pawn_moves(const Position& pos, MoveList& out){
         int to=bb::pop_lsb(promo_rightB);
         int from=to+7;
         for(int p=1;p<=4;++p) out.push_back({from,to,p});
+    }
+    while(ep_rightB){
+        int to = bb::pop_lsb(ep_rightB);
+        int from = to+7;
+        out.push_back({from,to,0});
     }
     }
 }

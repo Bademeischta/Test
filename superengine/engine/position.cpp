@@ -94,6 +94,11 @@ void Position::do_move(const movegen::Move& m){
     Color opp = c==WHITE?BLACK:WHITE;
     Bitboard from_mask = 1ULL<<m.from;
     Bitboard to_mask   = 1ULL<<m.to;
+    // handle en-passant capture
+    if(pc == PAWN && m.to == en_passant && en_passant != -1){
+        Bitboard cap_mask = c==WHITE ? (to_mask>>8) : (to_mask<<8);
+        for(int p=0;p<PIECE_NB;++p) piece_bb[opp][p] &= ~cap_mask;
+    }
     for(int p=0;p<PIECE_NB;++p) {
         piece_bb[c][p] &= ~from_mask;
         piece_bb[c][p] &= ~to_mask;
@@ -104,6 +109,13 @@ void Position::do_move(const movegen::Move& m){
     {
         piece_bb[c][pc] &= ~to_mask;
         piece_bb[c][m.promo] |= to_mask;
+    }
+    en_passant = -1;
+    if(pc==PAWN){
+        if(c==WHITE && m.from/8==1 && m.to/8==3)
+            en_passant = m.from + 8;
+        else if(c==BLACK && m.from/8==6 && m.to/8==4)
+            en_passant = m.from - 8;
     }
     // recompute occupancy
     for(int col=0;col<2;++col){
