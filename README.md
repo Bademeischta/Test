@@ -68,3 +68,52 @@ Dieses Repository liefert nur eine schlanke Demonstration – es fehlen beispiel
 fortgeschrittene Trainingsinfrastruktur, umfangreiche Datensätze und echte
 Stockfish-Integration. Dennoch bildet es ein kompaktes Fundament, um mit
 selbstlernenden Schachprogrammen zu experimentieren.
+
+## Roadmap und Checkliste
+
+Nachfolgend eine schrittweise Roadmap mit allen noch offenen Arbeiten. Jeder
+Punkt besitzt ein ankreuzbares Kästchen, sodass du den Fortschritt direkt im
+Repository verfolgen kannst.
+
+### 1. C++‑Engine (superengine)
+
+#### 1.1 Move‑Generation & Legalität
+
+- [ ] Sliding‑Moves (Bishop, Rook, Queen) implementieren
+- [ ] `Position::in_check(Color)` komplettieren
+- [ ] En‑Passant‑Logik ergänzen
+- [ ] King‑Moves und Rochade umsetzen
+- [ ] `generate_all_pseudo` und `generate_legal_moves` vereinen
+
+#### 1.2 Suchkern (Alpha‑Beta, Quiescence, TT, LMR, Null‑Move)
+
+- [ ] Transposition Table implementieren
+- [ ] Quiescence Search einbauen
+- [ ] Negamax/PVS mit LMR und Null‑Move
+- [ ] Search‑Entrypoint samt Zeitmanagement
+- [ ] Unit‑Tests (Perft, Mate‑in‑1)
+
+#### 1.3 NNUE‑Integration
+
+- [ ] `extract_features` (Half‑KP) implementieren
+- [ ] Vorwärtsdurchlauf (Eval) fertigstellen
+- [ ] Python‑Tools zum Trainieren und Quantisieren
+- [ ] Catch2‑Tests für geladene Netze
+
+#### 1.4 Tests & CI
+
+- [ ] Perft‑Tests (Depth 1–5)
+- [ ] clang‑format & Sanitizer in der CI
+- [ ] Coverage‑Reporting (optional)
+
+### 2. Python‑Komponente (chess_ai)
+
+- [ ] TensorBoard/W&B Logging integrieren
+- [ ] LMDB‑ReplayBuffer für große Datensätze
+- [ ] Linting (flake8/black/isort) in der CI
+
+### 3. CI/CD & Deployment
+
+- [ ] Dockerfiles für C++‑ und Python‑Teil
+- [ ] Kubernetes‑Manifeste (Deployment, CronJob)
+- [ ] Monitoring und Health‑Checks

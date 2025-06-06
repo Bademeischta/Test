@@ -10,8 +10,19 @@ Position::Position(const std::string& fen) {
     side=WHITE;
 
     std::istringstream ss(fen);
+bluwpn-codex/vervollständige-das-schach-ai-projekt-gemäß-checkliste
+    std::string board, stm, castling = "-", ep = "-";
+    if (!(ss >> board >> stm))
+        return; // invalid FEN, leave empty position
+    if (!(ss >> castling)) castling = "-";
+    if (!(ss >> ep)) ep = "-";
+    if (!(ss >> halfmove_clock)) halfmove_clock = 0;
+    if (!(ss >> fullmove_number)) fullmove_number = 1;
+
+
     std::string board, stm, castling, ep;
     ss >> board >> stm >> castling >> ep >> halfmove_clock >> fullmove_number;
+  main
     side = (stm=="w"?WHITE:BLACK);
     castling_rights = 0;
     if(castling.find('K') != std::string::npos) castling_rights |= 1;
