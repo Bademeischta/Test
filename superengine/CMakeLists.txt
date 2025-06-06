@@ -16,7 +16,9 @@ find_package(Threads REQUIRED)
 add_library(engine
     engine/bitboard.cpp
     engine/movegen.cpp
-    engine/position.cpp)
+    engine/position.cpp
+    engine/nnue_eval.cpp
+    engine/search.cpp)
 
 target_include_directories(engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/engine)
 target_link_libraries(engine PUBLIC Threads::Threads)
@@ -28,5 +30,13 @@ add_test(NAME test_movegen COMMAND test_movegen)
 add_executable(test_position tests/test_position.cpp)
 target_link_libraries(test_position PRIVATE engine Catch2::Catch2WithMain)
 add_test(NAME test_position COMMAND test_position)
+
+add_executable(test_perft tests/perft.cpp)
+target_link_libraries(test_perft PRIVATE engine Catch2::Catch2WithMain)
+add_test(NAME test_perft COMMAND test_perft)
+
+add_executable(test_search tests/test_search.cpp)
+target_link_libraries(test_search PRIVATE engine Catch2::Catch2WithMain)
+add_test(NAME test_search COMMAND test_search)
 
 enable_testing()
