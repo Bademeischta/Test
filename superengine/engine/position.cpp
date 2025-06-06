@@ -1,4 +1,5 @@
 #include "position.h"
+#include "movegen.h"
 #include <sstream>
 #include <cctype>
 
@@ -10,7 +11,6 @@ Position::Position(const std::string& fen) {
     side=WHITE;
 
     std::istringstream ss(fen);
-bluwpn-codex/vervollständige-das-schach-ai-projekt-gemäß-checkliste
     std::string board, stm, castling = "-", ep = "-";
     if (!(ss >> board >> stm))
         return; // invalid FEN, leave empty position
@@ -19,10 +19,6 @@ bluwpn-codex/vervollständige-das-schach-ai-projekt-gemäß-checkliste
     if (!(ss >> halfmove_clock)) halfmove_clock = 0;
     if (!(ss >> fullmove_number)) fullmove_number = 1;
 
-
-    std::string board, stm, castling, ep;
-    ss >> board >> stm >> castling >> ep >> halfmove_clock >> fullmove_number;
-  main
     side = (stm=="w"?WHITE:BLACK);
     castling_rights = 0;
     if(castling.find('K') != std::string::npos) castling_rights |= 1;
@@ -73,4 +69,80 @@ Piece Position::piece_on(int sq) const {
         }
     }
     return PIECE_NB; // invalid
+}
+
+bool Position::in_check(Color c) const {
+    int king_sq = -1;
+    Bitboard king_bb = piece_bb[c][KING];
+    if(king_bb) king_sq = __builtin_ctzll(king_bb);
+    if(king_sq == -1) return false;
+    Color opp = c==WHITE?BLACK:WHITE;
+    Position tmp = *const_cast<Position*>(this);
+    tmp.side = opp;
+    movegen::MoveList moves = movegen::generate_pseudo_legal(tmp);
+    for(const auto& m: moves){
+        if(m.to == king_sq) return true;
+    }
+    return false;
+}
+
+void Position::do_move(const movegen::Move& m){
+    Piece pc = piece_on(m.from);
+    Color c = side;
+    Color opp = c==WHITE?BLACK:WHITE;
+    Bitboard from_mask = 1ULL<<m.from;
+    Bitboard to_mask   = 1ULL<<m.to;
+    for(int p=0;p<PIECE_NB;++p) {
+        piece_bb[c][p] &= ~from_mask;
+        piece_bb[c][p] &= ~to_mask;
+        piece_bb[opp][p] &= ~to_mask;
+    }
+    piece_bb[c][pc] |= to_mask;
+    if(m.promo)
+    {
+        piece_bb[c][pc] &= ~to_mask;
+        piece_bb[c][m.promo] |= to_mask;
+    }
+    // recompute occupancy
+    for(int col=0;col<2;++col){
+        Bitboard occ=0ULL;
+        for(int p=0;p<PIECE_NB;++p) occ|=piece_bb[col][p];
+        occupied_bb[col]=occ;
+    }
+    all_occupied = occupied_bb[WHITE]|occupied_bb[BLACK];
+    side = opp;
+}
+
+std::string Position::to_fen() const {
+    std::string board="";
+    for(int r=7;r>=0;--r){
+        int empty=0;
+        for(int f=0;f<8;++f){
+            int sq=r*8+f;
+            Piece pc = piece_on(sq);
+            if(pc==PIECE_NB){
+                empty++; continue;
+            }
+            if(empty){ board += std::to_string(empty); empty=0; }
+            char c='?';
+            switch(pc){
+                case PAWN:c='p';break;case KNIGHT:c='n';break;case BISHOP:c='b';break;
+                case ROOK:c='r';break;case QUEEN:c='q';break;case KING:c='k';break;
+                default: break;
+            }
+            if(occupied_bb[WHITE] & (1ULL<<sq)) c=toupper(c);
+            board+=c;
+        }
+        if(empty) board += std::to_string(empty);
+        if(r>0) board+='/';
+    }
+    std::string stm = side==WHITE?"w":"b";
+    std::string cast="";
+    if(castling_rights&1) cast+='K';
+    if(castling_rights&2) cast+='Q';
+    if(castling_rights&4) cast+='k';
+    if(castling_rights&8) cast+='q';
+    if(cast.empty()) cast="-";
+    std::string ep = en_passant==-1?"-":std::string(1,'a'+(en_passant%8))+std::to_string(en_passant/8+1);
+    return board+" "+stm+" "+cast+" "+ep+" "+std::to_string(halfmove_clock)+" "+std::to_string(fullmove_number);
 }

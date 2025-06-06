@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include "bitboard.h"
+namespace movegen { struct Move; }
 
 enum Color { WHITE = 0, BLACK = 1 };
 enum Piece { PAWN = 0, KNIGHT, BISHOP, ROOK, QUEEN, KING, PIECE_NB };
@@ -22,4 +23,7 @@ struct Position {
     Bitboard occupied() const { return all_occupied; }
     Color side_to_move() const { return side; }
     Piece piece_on(int sq) const;
+    bool in_check(Color c) const;
+    void do_move(const movegen::Move& m);
+    std::string to_fen() const;
 };
