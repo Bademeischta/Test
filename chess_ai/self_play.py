@@ -31,3 +31,22 @@ def run_self_play(network, num_simulations: int = Config.NUM_SIMULATIONS):
                 yield s, p, z
             break
         current_player *= -1
+
+
+if __name__ == "__main__":
+    """Run a short self-play demo when executed as a script."""
+    from .policy_value_net import PolicyValueNet
+
+    net = PolicyValueNet(
+        GameEnvironment.NUM_CHANNELS,
+        ACTION_SIZE,
+        num_blocks=1,
+        filters=32,
+    )
+
+    for i, (_, _, value) in enumerate(run_self_play(net, num_simulations=1)):
+        print(f"Step {i}: value={value:.2f}")
+        if i >= 2:
+            break
+
+    print("Self-play finished successfully.")

@@ -1,5 +1,7 @@
 #include "position.h"
 #include "movegen.h"
+
+namespace movegen { MoveList generate_pseudo_moves(const Position& pos); }
 #include <sstream>
 #include <cctype>
 
@@ -79,7 +81,7 @@ bool Position::in_check(Color c) const {
     Color opp = c==WHITE?BLACK:WHITE;
     Position tmp = *const_cast<Position*>(this);
     tmp.side = opp;
-    movegen::MoveList moves = movegen::generate_pseudo_legal(tmp);
+    movegen::MoveList moves = movegen::generate_pseudo_moves(tmp);
     for(const auto& m: moves){
         if(m.to == king_sq) return true;
     }

@@ -269,7 +269,7 @@ void generate_king_moves(const Position& pos, MoveList& out){
     }
 }
 
-MoveList generate_pseudo_legal(const Position& pos){
+MoveList generate_pseudo_moves(const Position& pos){
     MoveList ml; ml.reserve(64);
     generate_pawn_moves(pos, ml);
     generate_knight_moves(pos, ml);
@@ -278,9 +278,9 @@ MoveList generate_pseudo_legal(const Position& pos){
     return ml;
 }
 
-MoveList generate_legal_moves(const Position& pos){
+MoveList generate_moves(const Position& pos){
     MoveList ml;
-    auto pseudo = generate_pseudo_legal(pos);
+    auto pseudo = generate_pseudo_moves(pos);
     for(const auto& m: pseudo){
         Position next = pos;
         next.do_move(m);
