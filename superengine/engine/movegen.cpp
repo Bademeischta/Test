@@ -168,4 +168,95 @@ void generate_knight_moves(const Position& pos, MoveList& out){
     }
 }
 
+void generate_sliding_moves(const Position& pos, MoveList& out){
+    Color stm = pos.side;
+    Bitboard occW = pos.occupied_bb[WHITE];
+    Bitboard occB = pos.occupied_bb[BLACK];
+    auto gen_dir = [&](int from, int df, int dr, Bitboard blockers){
+        int f = from % 8; int r = from / 8;
+        for(int s=1;;++s){
+            int nf=f+df*s, nr=r+dr*s;
+            if(nf<0||nf>=8||nr<0||nr>=8) break;
+            int to = nr*8+nf;
+            Bitboard mask = 1ULL<<to;
+            if(blockers & mask){
+                if((stm==WHITE?occB:occW)&mask) out.push_back({from,to,0});
+                break;
+            }
+            out.push_back({from,to,0});
+        }
+    };
+
+    Bitboard bishops = pos.piece_bb[stm][BISHOP];
+    Bitboard rooks   = pos.piece_bb[stm][ROOK];
+    Bitboard queens  = pos.piece_bb[stm][QUEEN];
+    Bitboard blockers = pos.all_occupied;
+
+    Bitboard pieces = bishops | queens;
+    while(pieces){
+        int from = bb::pop_lsb(pieces);
+        gen_dir(from,1,1,blockers);
+        gen_dir(from,-1,1,blockers);
+        gen_dir(from,1,-1,blockers);
+        gen_dir(from,-1,-1,blockers);
+    }
+
+    pieces = rooks | queens;
+    while(pieces){
+        int from = bb::pop_lsb(pieces);
+        gen_dir(from,1,0,blockers);
+        gen_dir(from,-1,0,blockers);
+        gen_dir(from,0,1,blockers);
+        gen_dir(from,0,-1,blockers);
+    }
+}
+
+void generate_king_moves(const Position& pos, MoveList& out){
+    Color stm = pos.side;
+    Bitboard king = pos.piece_bb[stm][KING];
+    int from = bb::pop_lsb(king);
+    Bitboard occOwn = pos.occupied_bb[stm];
+    const int dr[8]={1,1,1,0,0,-1,-1,-1};
+    const int df[8]={-1,0,1,-1,1,-1,0,1};
+    for(int i=0;i<8;++i){
+        int nf=(from%8)+df[i], nr=(from/8)+dr[i];
+        if(nf<0||nf>=8||nr<0||nr>=8) continue;
+        int to=nr*8+nf;
+        if(!(occOwn & (1ULL<<to)))
+            out.push_back({from,to,0});
+    }
+    // castling very simplified
+    if(stm==WHITE){
+        if((pos.castling_rights & 1) && !(pos.all_occupied & ((1ULL<<5)|(1ULL<<6))))
+            out.push_back({4,6,0});
+        if((pos.castling_rights & 2) && !(pos.all_occupied & ((1ULL<<1)|(1ULL<<2)|(1ULL<<3))))
+            out.push_back({4,2,0});
+    }else{
+        if((pos.castling_rights & 4) && !(pos.all_occupied & ((1ULL<<61)|(1ULL<<62))))
+            out.push_back({60,62,0});
+        if((pos.castling_rights & 8) && !(pos.all_occupied & ((1ULL<<57)|(1ULL<<58)|(1ULL<<59))))
+            out.push_back({60,58,0});
+    }
+}
+
+MoveList generate_pseudo_legal(const Position& pos){
+    MoveList ml; ml.reserve(64);
+    generate_pawn_moves(pos, ml);
+    generate_knight_moves(pos, ml);
+    generate_sliding_moves(pos, ml);
+    generate_king_moves(pos, ml);
+    return ml;
+}
+
+MoveList generate_legal_moves(const Position& pos){
+    MoveList ml;
+    auto pseudo = generate_pseudo_legal(pos);
+    for(const auto& m: pseudo){
+        Position next = pos;
+        next.do_move(m);
+        if(!next.in_check(pos.side)) ml.push_back(m);
+    }
+    return ml;
+}
+
 } // namespace movegen

@@ -18,6 +18,11 @@ void init_attack_tables();
 
 void generate_pawn_moves(const Position& pos, MoveList& out);
 void generate_knight_moves(const Position& pos, MoveList& out);
+void generate_sliding_moves(const Position& pos, MoveList& out);
+void generate_king_moves(const Position& pos, MoveList& out);
+
+MoveList generate_pseudo_legal(const Position& pos);
+MoveList generate_legal_moves(const Position& pos);
 
 inline MoveList generate_pawn_knight(const Position& pos) {
     MoveList ml; ml.reserve(32);

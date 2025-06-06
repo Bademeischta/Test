@@ -11,7 +11,6 @@ TEST_CASE("Fen parsing extras", "[position]") {
     // check piece on e1 is king
     REQUIRE(pos.piece_on(4) == KING);
 }
-bluwpn-codex/vervollständige-das-schach-ai-projekt-gemäß-checkliste
 
 TEST_CASE("Fen with en passant target", "[position]") {
     Position pos("rnbqkbnr/pppppppp/8/8/8/4P3/PPPP1PPP/RNBQKBNR b KQkq e3 0 1");
@@ -20,4 +19,3 @@ TEST_CASE("Fen with en passant target", "[position]") {
     REQUIRE(pos.castling_rights == 0b1111);
     REQUIRE(pos.piece_on(20) == PAWN); // white pawn on e3
 }
-main
