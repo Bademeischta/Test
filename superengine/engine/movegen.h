@@ -21,6 +21,14 @@ void generate_knight_moves(const Position& pos, MoveList& out);
 void generate_sliding_moves(const Position& pos, MoveList& out);
 void generate_king_moves(const Position& pos, MoveList& out);
 
+// generate all pseudo legal moves without checking king safety
+MoveList generate_pseudo_moves(const Position& pos);
+
+// temporary alias for backwards compatibility
+inline MoveList generate_pseudo_legal(const Position& pos) {
+    return generate_pseudo_moves(pos);
+}
+
 // unified move generator returning only legal moves
 MoveList generate_moves(const Position& pos);
 
