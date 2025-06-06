@@ -21,3 +21,9 @@ TEST_CASE("Knight on d4", "[movegen]") {
     auto moves = movegen::generate_pawn_knight(pos);
     REQUIRE(moves.size() == 8);
 }
+
+TEST_CASE("Start position legal move count", "[movegen]") {
+    Position pos("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    auto moves = movegen::generate_moves(pos);
+    REQUIRE(moves.size() == 20);
+}

@@ -83,7 +83,7 @@ Repository verfolgen kannst.
 - [ ] `Position::in_check(Color)` komplettieren
 - [ ] En‑Passant‑Logik ergänzen
 - [ ] King‑Moves und Rochade umsetzen
-- [ ] `generate_all_pseudo` und `generate_legal_moves` vereinen
+- [x] `generate_all_pseudo` und `generate_legal_moves` vereinen -> `generate_moves`
 
 #### 1.2 Suchkern (Alpha‑Beta, Quiescence, TT, LMR, Null‑Move)
 
