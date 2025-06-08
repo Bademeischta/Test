@@ -43,4 +43,8 @@ add_executable(test_search tests/test_search.cpp)
 target_link_libraries(test_search PRIVATE engine Catch2::Catch2WithMain)
 add_test(NAME test_search COMMAND test_search)
 
+add_executable(test_nnue tests/test_nnue.cpp)
+target_link_libraries(test_nnue PRIVATE engine Catch2::Catch2WithMain)
+add_test(NAME test_nnue COMMAND test_nnue)
+
 enable_testing()

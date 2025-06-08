@@ -4,6 +4,8 @@ class Config:
     # Paths
     CHECKPOINT_DIR = "checkpoints"
     REPLAY_BUFFER_SIZE = 100_000
+    LOG_DIR = "runs"
+    WANDB_PROJECT = "chess-ai"
 
     # Hardware
     DEVICE = "cuda" if __import__('torch').cuda.is_available() else "cpu"

@@ -1,5 +1,8 @@
 #include "search.h"
 #include "nnue_eval.h"
+#include <algorithm>
+
+static const int MVV[6] = {100,320,330,500,900,20000};
 
 constexpr int INF = 32000;
 
@@ -52,9 +55,26 @@ int Search::pv_node(Position& pos, int alpha, int beta, int depth) {
     if (eval >= beta) return eval;
 
     moves = movegen::generate_moves(pos);
-    for (size_t i = 0; i < moves.size(); ++i) {
+    std::vector<std::pair<int,movegen::Move>> scored;
+    scored.reserve(moves.size());
+    for(const auto& m: moves){
+        int score = 0;
+        Piece capture = pos.piece_on(m.to);
+        Piece piece = pos.piece_on(m.from);
+        if(capture != PIECE_NB)
+            score += 10 * MVV[capture] - MVV[piece];
+        if(killer_[0][depth].from==m.from && killer_[0][depth].to==m.to)
+            score += 9000;
+        if(killer_[1][depth].from==m.from && killer_[1][depth].to==m.to)
+            score += 8000;
+        score += history_[m.from][m.to];
+        scored.push_back({score,m});
+    }
+    std::sort(scored.begin(), scored.end(), [](auto& a, auto& b){return a.first>b.first;});
+    for (size_t i = 0; i < scored.size(); ++i) {
+        auto m = scored[i].second;
         Position next = pos;
-        next.do_move(moves[i]);
+        next.do_move(m);
         int score;
         if(i >= 3 && depth >= 3){
             score = -pv_node(next, -alpha-1, -alpha, depth-2);
@@ -64,10 +84,16 @@ int Search::pv_node(Position& pos, int alpha, int beta, int depth) {
             score = -pv_node(next, -beta, -alpha, depth-1);
         }
         if (score >= beta) {
+            killer_[1][depth] = killer_[0][depth];
+            killer_[0][depth] = m;
+            history_[m.from][m.to] += depth * depth;
             store_tt(key, {depth, score});
             return score;
         }
-        if (score > alpha) alpha = score;
+        if (score > alpha) {
+            alpha = score;
+            history_[m.from][m.to] += depth;
+        }
     }
     store_tt(key, {depth, alpha});
     return alpha;
