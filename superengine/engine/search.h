@@ -1,12 +1,15 @@
 #pragma once
-#include "position.h"
-#include "movegen.h"
-
-#include <unordered_map>
 #include <chrono>
 #include <cstddef>
+#include <unordered_map>
 
-struct TTEntry { int depth; int score; };
+#include "movegen.h"
+#include "position.h"
+
+struct TTEntry {
+    int depth;
+    int score;
+};
 
 struct Limits {
     int time_ms{0};
@@ -14,11 +17,11 @@ struct Limits {
 };
 
 class Search {
-public:
+   public:
     int search(Position& pos, int depth);
     int search(Position& pos, const Limits& limits);
 
-private:
+   private:
     int pv_node(Position& pos, int alpha, int beta, int depth);
     int quiesce(Position& pos, int alpha, int beta);
     bool stop() const;
