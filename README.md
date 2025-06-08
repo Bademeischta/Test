@@ -75,6 +75,20 @@ python scripts/train.py --games 5 --epochs 3 --simulations 50
 
 Während des Trainings erscheinen nun kurze Statistiken zu jedem Epoch.
 
+### GPU Setup
+
+Falls deine GPU von der offiziellen PyTorch-Distribution nicht unterstützt wird,
+musst du PyTorch selbst kompilieren. Setze dazu beispielsweise
+
+```bash
+export TORCH_CUDA_ARCH_LIST="12.0;10.0;8.6;8.0;7.5;7.0;6.1"
+git clone --recursive https://github.com/pytorch/pytorch
+cd pytorch && python setup.py install
+```
+
+Danach erkennt `torch.cuda.is_available()` die RTX 5070 korrekt und das Training
+nutzt die GPU.
+
 ### Gegen die KI spielen
 
 Nach dem Training kannst du mit folgendem Skript gegen das neueste Netz
@@ -170,7 +184,7 @@ Repository verfolgen kannst.
 #### 1.4 Tests & CI
 
 - [x] Perft‑Tests (Depth 1–5)
-- [ ] clang‑format & Sanitizer in der CI
+ - [x] clang‑format & Sanitizer in der CI
  - [x] Coverage‑Reporting (optional)
 
 ### 2. Python‑Komponente (chess_ai)

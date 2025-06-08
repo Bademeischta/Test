@@ -3,6 +3,20 @@ project(SuperEngine VERSION 0.1 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -flto")
 
+# Optional build flags for CI
+option(ENABLE_SANITIZER "Enable address/undefined sanitizers" OFF)
+option(ENABLE_COVERAGE "Enable gcov code coverage" OFF)
+
+if(ENABLE_SANITIZER)
+  add_compile_options(-fsanitize=address,undefined -fno-omit-frame-pointer)
+  add_link_options(-fsanitize=address,undefined)
+endif()
+
+if(ENABLE_COVERAGE)
+  add_compile_options(--coverage -O0)
+  add_link_options(--coverage)
+endif()
+
 include(FetchContent)
 FetchContent_Declare(
   Catch2
