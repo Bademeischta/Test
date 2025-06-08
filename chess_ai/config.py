@@ -6,7 +6,7 @@ class Config:
     REPLAY_BUFFER_SIZE = 100_000
 
     # Hardware
-    DEVICE = "cuda" if __import__("torch").cuda.is_available() else "cpu"
+    DEVICE = "cuda" if __import__('torch').cuda.is_available() else "cpu"
     SEED = 42
 
     # MCTS parameters
@@ -23,3 +23,4 @@ class Config:
     FILTER_QUIET_POSITIONS = True
     WEIGHT_DECAY = 1e-4
     MOMENTUM = 0.9
+

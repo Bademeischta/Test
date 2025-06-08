@@ -1,6 +1,5 @@
-from functools import lru_cache
-
 import chess
+from functools import lru_cache
 
 PROMOTIONS = [None, chess.QUEEN, chess.ROOK, chess.BISHOP, chess.KNIGHT]
 ACTION_SIZE = 64 * 64 * len(PROMOTIONS)

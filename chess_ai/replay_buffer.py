@@ -26,7 +26,9 @@ class ReplayBuffer:
         if batch_size > len(self.buffer):
             raise ValueError("Batch size larger than buffer")
 
-        indices = np.random.choice(len(self.buffer), size=batch_size, replace=False)
+        indices = np.random.choice(
+            len(self.buffer), size=batch_size, replace=False
+        )
         indices = np.sort(indices)
         batch = [self.buffer[i] for i in indices]
         states, policies, values = zip(*batch)
@@ -40,7 +42,7 @@ class ReplayBuffer:
         if batch_size > len(self.buffer):
             raise ValueError("Batch size larger than buffer")
         priorities = np.array(self.priorities, dtype=np.float32)
-        probs = priorities**alpha
+        probs = priorities ** alpha
         probs /= probs.sum()
         indices = np.random.choice(len(self.buffer), size=batch_size, p=probs)
         indices = np.sort(indices)

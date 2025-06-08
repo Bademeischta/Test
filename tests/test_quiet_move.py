@@ -24,3 +24,4 @@ def test_is_quiet_move():
     env.step(chess.Move.from_uci("b8c6"))
     check_move = chess.Move.from_uci("h5f7")
     assert not env.is_quiet_move(check_move)
+

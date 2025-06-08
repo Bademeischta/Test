@@ -1,17 +1,16 @@
 #!/usr/bin/env python
 """Minimal training harness for the chess AI."""
 import argparse
-
 import torch
 
-from chess_ai.action_index import ACTION_SIZE
 from chess_ai.config import Config
 from chess_ai.game_environment import GameEnvironment
-from chess_ai.network_manager import NetworkManager
 from chess_ai.policy_value_net import PolicyValueNet
 from chess_ai.replay_buffer import ReplayBuffer
 from chess_ai.self_play import run_self_play
 from chess_ai.trainer import Trainer
+from chess_ai.action_index import ACTION_SIZE
+from chess_ai.network_manager import NetworkManager
 
 
 def load_or_initialize_network(manager: NetworkManager):
@@ -41,14 +40,8 @@ def main(args):
     buffer = ReplayBuffer()
 
     for g in range(args.games):
-codex/erweiterungen-für-python--und-c++-komponenten-planen
-        for state, policy, value in run_self_play(
-            net, num_simulations=args.simulations
-        ):
-
         print(f"Generating game {g + 1}/{args.games}...")
         for state, policy, value in run_self_play(net, num_simulations=args.simulations):
-main
             buffer.add(state, policy, value)
     print(f"Collected {len(buffer)} training positions.")
 
@@ -61,14 +54,7 @@ main
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run minimal training loop")
-    parser.add_argument(
-        "--games", type=int, default=1, help="Number of self-play games"
-    )
+    parser.add_argument("--games", type=int, default=1, help="Number of self-play games")
     parser.add_argument("--epochs", type=int, default=1, help="Training epochs")
-    parser.add_argument(
-        "--simulations",
-        type=int,
-        default=Config.NUM_SIMULATIONS,
-        help="MCTS simulations",
-    )
+    parser.add_argument("--simulations", type=int, default=Config.NUM_SIMULATIONS, help="MCTS simulations")
     main(parser.parse_args())

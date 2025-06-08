@@ -1,6 +1,6 @@
-import lightning as L
-import numpy as np
 import torch
+import numpy as np
+import lightning as L
 from torch import nn
 
 
@@ -33,8 +33,7 @@ class Module(L.LightningModule):
 
 data = torch.utils.data.TensorDataset(
     torch.from_numpy(np.load("fen_vec.npy")),
-    torch.from_numpy(np.load("score.npy")).unsqueeze(1),
-)
+    torch.from_numpy(np.load("score.npy")).unsqueeze(1))
 loader = torch.utils.data.DataLoader(
     data,
     batch_size=8192,

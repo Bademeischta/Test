@@ -1,5 +1,4 @@
 import numpy as np
-
 from chess_ai.replay_buffer import ReplayBuffer
 
 
