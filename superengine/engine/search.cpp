@@ -51,10 +51,7 @@ int Search::pv_node(Position& pos, int alpha, int beta, int depth) {
     int eval = nnue::eval(pos);
     if (eval >= beta) return eval;
 
-codex/enhance-search-with-pruning-and-tests
-
     auto moves = movegen::generate_moves(pos);
-main
     for (size_t i = 0; i < moves.size(); ++i) {
         Position next = pos;
         next.do_move(moves[i]);
