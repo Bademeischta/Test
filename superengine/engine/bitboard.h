@@ -15,4 +15,14 @@ namespace bb {
         b &= b - 1;
         return idx;
     }
+
+    Bitboard north_one(Bitboard b);
+    Bitboard south_one(Bitboard b);
+    Bitboard east_one(Bitboard b);
+    Bitboard west_one(Bitboard b);
+
+    Bitboard north_east(Bitboard b);
+    Bitboard north_west(Bitboard b);
+    Bitboard south_east(Bitboard b);
+    Bitboard south_west(Bitboard b);
 }
