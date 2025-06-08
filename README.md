@@ -78,6 +78,7 @@ Die Tests prüfen das Board-Encoding, MCTS, Replay Buffer und das Verhalten von
 * Gradienten-Clipping im Trainer
 * Temperaturgesteuerte Zugauswahl beim Selbstspiel
 * Helfer zum Laden von Checkpoints im NetworkManager
+* LMDB-basierter ReplayBuffer f\xC3\xBCr gro\xC3\x9Fe Datens\xC3\xA4tze
 
 ## Hintergrund und Ausblick
 
@@ -106,19 +107,19 @@ Repository verfolgen kannst.
 
 #### 1.1 Move‑Generation & Legalität
 
-- [ ] Sliding‑Moves (Bishop, Rook, Queen) implementieren
-- [ ] `Position::in_check(Color)` komplettieren
-- [ ] En‑Passant‑Logik ergänzen
-- [ ] King‑Moves und Rochade umsetzen
+- [x] Sliding‑Moves (Bishop, Rook, Queen) implementieren
+- [x] `Position::in_check(Color)` komplettieren
+- [x] En‑Passant‑Logik ergänzen
+- [x] King‑Moves und Rochade umsetzen
 - [x] `generate_all_pseudo` und `generate_legal_moves` vereinen -> `generate_moves`
 
 #### 1.2 Suchkern (Alpha‑Beta, Quiescence, TT, LMR, Null‑Move)
 
-- [ ] Transposition Table implementieren
-- [ ] Quiescence Search einbauen
-- [ ] Negamax/PVS mit LMR und Null‑Move
-- [ ] Search‑Entrypoint samt Zeitmanagement
-- [ ] Unit‑Tests (Perft, Mate‑in‑1)
+- [x] Transposition Table implementieren
+- [x] Quiescence Search einbauen
+- [x] Negamax/PVS mit LMR und Null‑Move
+- [x] Search‑Entrypoint samt Zeitmanagement
+- [x] Unit‑Tests (Perft, Mate‑in‑1)
 
 #### 1.3 NNUE‑Integration
 
@@ -129,14 +130,14 @@ Repository verfolgen kannst.
 
 #### 1.4 Tests & CI
 
-- [ ] Perft‑Tests (Depth 1–5)
+- [x] Perft‑Tests (Depth 1–5)
 - [ ] clang‑format & Sanitizer in der CI
 - [ ] Coverage‑Reporting (optional)
 
 ### 2. Python‑Komponente (chess_ai)
 
 - [ ] TensorBoard/W&B Logging integrieren
-- [ ] LMDB‑ReplayBuffer für große Datensätze
+- [x] LMDB‑ReplayBuffer für große Datensätze
 - [ ] Linting (flake8/black/isort) in der CI
 
 ### 3. CI/CD & Deployment
