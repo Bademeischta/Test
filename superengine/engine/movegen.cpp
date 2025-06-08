@@ -4,6 +4,7 @@
 namespace movegen {
 
 uint64_t KNIGHT_ATTACKS[64];
+uint64_t KING_ATTACKS[64];
 
 static void init_knights() {
     for(int sq=0; sq<64; ++sq) {
@@ -20,8 +21,24 @@ static void init_knights() {
     }
 }
 
+static void init_kings() {
+    for(int sq=0; sq<64; ++sq){
+        int r = sq/8, f=sq%8;
+        uint64_t mask=0ULL;
+        for(int dr=-1; dr<=1; ++dr){
+            for(int df=-1; df<=1; ++df){
+                if(dr==0 && df==0) continue;
+                int nr=r+dr, nf=f+df;
+                if(nr>=0 && nr<8 && nf>=0 && nf<8)
+                    mask |= 1ULL<<(nr*8+nf);
+            }
+        }
+        KING_ATTACKS[sq]=mask;
+    }
+}
+
 void init_attack_tables(){
-    static bool init=false; if(init) return; init=true; init_knights();
+    static bool init=false; if(init) return; init=true; init_knights(); init_kings();
 }
 
 void generate_pawn_moves(const Position& pos, MoveList& out){
@@ -194,6 +211,80 @@ void generate_knight_moves(const Position& pos, MoveList& out){
                 int to = bb::pop_lsb(targets);
                 out.push_back({from,to,0});
             }
+        }
+    }
+}
+
+Bitboard bishop_attacks(int from, Bitboard blockers){
+    Bitboard attacks=0ULL;
+    int f=from%8, r=from/8;
+    for(int df=1, dr=1; df<=1; ++df){ /* dummy to use loops */ }
+    auto add_dir=[&](int df, int dr){
+        for(int s=1;;++s){
+            int nf=f+df*s, nr=r+dr*s;
+            if(nf<0||nf>=8||nr<0||nr>=8) break;
+            int sq=nr*8+nf; Bitboard m=1ULL<<sq; attacks|=m; if(blockers&m) break;
+        }
+    };
+    add_dir(1,1); add_dir(-1,1); add_dir(1,-1); add_dir(-1,-1);
+    return attacks;
+}
+
+Bitboard rook_attacks(int from, Bitboard blockers){
+    Bitboard attacks=0ULL;
+    int f=from%8, r=from/8;
+    auto add_dir=[&](int df, int dr){
+        for(int s=1;;++s){
+            int nf=f+df*s, nr=r+dr*s;
+            if(nf<0||nf>=8||nr<0||nr>=8) break;
+            int sq=nr*8+nf; Bitboard m=1ULL<<sq; attacks|=m; if(blockers&m) break;
+        }
+    };
+    add_dir(1,0); add_dir(-1,0); add_dir(0,1); add_dir(0,-1);
+    return attacks;
+}
+
+void generate_bishop_moves(const Position& pos, MoveList& out){
+    Color stm = pos.side;
+    Bitboard occOwn = pos.occupied_bb[stm];
+    Bitboard pieces = pos.piece_bb[stm][BISHOP];
+    Bitboard blockers = pos.all_occupied;
+    while(pieces){
+        int from = bb::pop_lsb(pieces);
+        Bitboard targets = bishop_attacks(from, blockers) & ~occOwn;
+        while(targets){
+            int to = bb::pop_lsb(targets);
+            out.push_back({from,to,0});
+        }
+    }
+}
+
+void generate_rook_moves(const Position& pos, MoveList& out){
+    Color stm = pos.side;
+    Bitboard occOwn = pos.occupied_bb[stm];
+    Bitboard pieces = pos.piece_bb[stm][ROOK];
+    Bitboard blockers = pos.all_occupied;
+    while(pieces){
+        int from = bb::pop_lsb(pieces);
+        Bitboard targets = rook_attacks(from, blockers) & ~occOwn;
+        while(targets){
+            int to = bb::pop_lsb(targets);
+            out.push_back({from,to,0});
+        }
+    }
+}
+
+void generate_queen_moves(const Position& pos, MoveList& out){
+    Color stm = pos.side;
+    Bitboard occOwn = pos.occupied_bb[stm];
+    Bitboard pieces = pos.piece_bb[stm][QUEEN];
+    Bitboard blockers = pos.all_occupied;
+    while(pieces){
+        int from = bb::pop_lsb(pieces);
+        Bitboard targets = queen_attacks(from, blockers) & ~occOwn;
+        while(targets){
+            int to = bb::pop_lsb(targets);
+            out.push_back({from,to,0});
         }
     }
 }
