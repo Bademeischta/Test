@@ -29,4 +29,7 @@ private:
     std::size_t nodes_{0};
     std::chrono::steady_clock::time_point start_{};
     static constexpr std::size_t TT_MAX = 100000;
+
+    movegen::Move killer_[2][64]{};
+    int history_[64][64]{};
 };

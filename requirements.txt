@@ -2,3 +2,10 @@ torch
 python-chess
 numpy
 lmdb
+flask
+tensorboard
+wandb
+black
+flake8
+isort
+coverage

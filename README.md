@@ -1,4 +1,5 @@
 # Chess AI Skeleton
+[![Coverage](https://codecov.io/gh/example/chess-ai/graph/badge.svg)](https://codecov.io/gh/example/chess-ai)
 
 Dieses Repository enthält ein Beispielprojekt für eine selbstlernende Schach-KI.
 Es vereint eine minimalistische Python-Implementierung mit einigen
@@ -162,28 +163,29 @@ Repository verfolgen kannst.
 - [x] Negamax/PVS mit LMR und Null‑Move
 - [x] Search‑Entrypoint samt Zeitmanagement
 - [x] Unit‑Tests (Perft, Mate‑in‑1)
+- [x] Move‑Ordering‑Heuristiken (MVV/LVA, Killer, History)
 
 #### 1.3 NNUE‑Integration
 
-- [ ] `extract_features` (Half‑KP) implementieren
-- [ ] Vorwärtsdurchlauf (Eval) fertigstellen
+ - [x] `extract_features` (Half‑KP) implementieren
+ - [x] Vorwärtsdurchlauf (Eval) fertigstellen
 - [ ] Python‑Tools zum Trainieren und Quantisieren
-- [ ] Catch2‑Tests für geladene Netze
+ - [x] Catch2‑Tests für geladene Netze
 
 #### 1.4 Tests & CI
 
 - [x] Perft‑Tests (Depth 1–5)
 - [ ] clang‑format & Sanitizer in der CI
-- [ ] Coverage‑Reporting (optional)
+ - [x] Coverage‑Reporting (optional)
 
 ### 2. Python‑Komponente (chess_ai)
 
-- [ ] TensorBoard/W&B Logging integrieren
+ - [x] TensorBoard/W&B Logging integrieren
 - [x] LMDB‑ReplayBuffer für große Datensätze
-- [ ] Linting (flake8/black/isort) in der CI
+ - [x] Linting (flake8/black/isort) in der CI
 
 ### 3. CI/CD & Deployment
 
-- [ ] Dockerfiles für C++‑ und Python‑Teil
-- [ ] Kubernetes‑Manifeste (Deployment, CronJob)
-- [ ] Monitoring und Health‑Checks
+ - [x] Dockerfiles für C++‑ und Python‑Teil
+ - [x] Kubernetes‑Manifeste (Deployment, CronJob)
+ - [x] Monitoring und Health‑Checks

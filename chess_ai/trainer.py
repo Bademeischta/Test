@@ -3,6 +3,8 @@
 
 import torch
 from torch.utils.data import DataLoader, TensorDataset
+from torch.utils.tensorboard import SummaryWriter
+import wandb
 
 from .config import Config
 
@@ -15,12 +17,19 @@ class Trainer:
         optimizer,
         batch_size: int = Config.BATCH_SIZE,
         epochs: int = 1,
+        log_dir: str = Config.LOG_DIR,
+        use_wandb: bool = False,
     ):
         self.network = network.to(Config.DEVICE)
         self.buffer = buffer
         self.optimizer = optimizer
         self.batch_size = batch_size
         self.epochs = epochs
+        self.writer = SummaryWriter(log_dir)
+        self.use_wandb = use_wandb
+        if self.use_wandb:
+            wandb.init(project=Config.WANDB_PROJECT)
+            wandb.watch(self.network)
 
     def train(self):
         """Train the network using data from the replay buffer."""
@@ -50,3 +59,6 @@ class Trainer:
                 epoch_loss += loss.item()
             avg_loss = epoch_loss / len(loader)
             print(f"Epoch {epoch + 1}/{self.epochs} - loss {avg_loss:.4f}")
+            self.writer.add_scalar("loss", avg_loss, epoch)
+            if self.use_wandb:
+                wandb.log({"loss": avg_loss})

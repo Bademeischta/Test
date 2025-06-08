@@ -12,6 +12,14 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
-          pip install pytest
-      - name: Run tests
-        run: pytest -q
+          pip install pytest black flake8 isort coverage
+          pip install -e .
+      - name: Lint
+        run: |
+          black --check chess_ai scripts tests
+          isort --check chess_ai scripts tests
+          flake8 chess_ai scripts tests
+      - name: Run tests with coverage
+        run: pytest -q --cov=chess_ai --cov-report=xml
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3

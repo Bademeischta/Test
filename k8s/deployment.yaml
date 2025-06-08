@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chess-ai
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chess-ai
+  template:
+    metadata:
+      labels:
+        app: chess-ai
+    spec:
+      containers:
+      - name: trainer
+        image: chess-ai:latest
+        ports:
+        - containerPort: 8000
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000

@@ -1,0 +1,15 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: chess-ai-selfplay
+spec:
+  schedule: "0 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: selfplay
+            image: chess-ai:latest
+            command: ["python", "-m", "chess_ai.self_play"]
+          restartPolicy: OnFailure
