@@ -12,11 +12,8 @@ fi
 if [ -d "superengine" ]; then
   echo "Building superengine..."
   cd superengine
-  mkdir -p build
-  cd build
-  cmake ..
   make -j$(nproc)
-  cd ../..
+  cd ..
 fi
 
 echo "Setup complete."

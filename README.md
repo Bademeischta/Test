@@ -89,14 +89,9 @@ Per `--play-white` wählst du deine Farbe.
 ### C++-Engine nutzen
 
 Die Verzeichnisse unter `superengine/` enthalten eine experimentelle
-C++-Engine. Sie wird beim Aufruf von `./scripts/install.sh` automatisch mit
-`cmake` und `make` gebaut. Anschließend kannst du in `superengine/build` die
-erzeugten Testprogramme ausführen, z.B.:
-
-```bash
-cd superengine/build
-ctest
-```
+C++-Engine. Beim Aufruf von `./scripts/install.sh` wird sie nun
+über ein kleines `Makefile` gebaut. Das erzeugte Binary findest du
+anschließend im Ordner `superengine/make-build`.
 
 Die Datei `main.cpp` demonstriert zudem eine einfache UCI-Schnittstelle, die du
 nach einem eigenen Build als Einstieg für weitere Experimente verwenden kannst.
