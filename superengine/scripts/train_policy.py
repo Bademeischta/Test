@@ -1,16 +1,15 @@
 import glob
 import os
-
 import chess
 import chess.pgn
-import lightning as L
 import numpy as np
 import torch
+import lightning as L
 from torch.utils.data import DataLoader, TensorDataset
 
-from chess_ai.action_index import ACTION_SIZE, move_to_index
 from chess_ai.game_environment import GameEnvironment
 from chess_ai.policy_value_net import PolicyValueNet
+from chess_ai.action_index import ACTION_SIZE, move_to_index
 
 
 def load_games(game_dir: str):
@@ -75,7 +74,9 @@ def main():
     loader = DataLoader(dataset, batch_size=256, shuffle=True, num_workers=4)
     trainer = L.Trainer(
         max_epochs=5,
-        devices=(1 if not torch.cuda.is_available() else torch.cuda.device_count()),
+        devices=(
+            1 if not torch.cuda.is_available() else torch.cuda.device_count()
+        ),
         accelerator="gpu" if torch.cuda.is_available() else "cpu",
     )
     trainer.fit(Module(), loader)

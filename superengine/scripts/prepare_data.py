@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 
-import sys
-
 import chess
 import chess.pgn
 import numpy as np
+import sys
 
 
 def is_quiet(board):
-    return not board.is_check() and (
-        not board.is_capture(board.peek()) if board.move_stack else True
+    return (
+        not board.is_check()
+        and (
+            not board.is_capture(board.peek()) if board.move_stack else True
+        )
     )
 
 

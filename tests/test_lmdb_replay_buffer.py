@@ -1,3 +1,6 @@
+import os
+import tempfile
+
 import numpy as np
 
 from chess_ai.lmdb_replay_buffer import LMDBReplayBuffer
