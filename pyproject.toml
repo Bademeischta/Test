@@ -16,3 +16,10 @@ dependencies = [
 
 [tool.setuptools.packages.find]
 include = ["chess_ai*"]
+
+[tool.black]
+line-length = 88
+target-version = ['py310']
+
+[tool.isort]
+profile = "black"

@@ -1,8 +1,8 @@
 import chess
 import torch
 
+from chess_ai.action_index import ACTION_SIZE, index_to_move, move_to_index
 from chess_ai.mcts import MCTS
-from chess_ai.action_index import move_to_index, index_to_move, ACTION_SIZE
 
 
 class DummyNet(torch.nn.Module):

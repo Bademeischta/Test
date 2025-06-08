@@ -1,6 +1,5 @@
 """Training utilities for the chess network."""
 
-
 import torch
 from torch.utils.data import DataLoader, TensorDataset
 
@@ -30,15 +29,9 @@ class Trainer:
         if len(self.buffer) < self.batch_size:
             return
         states, policies, values = self.buffer.sample(self.batch_size)
-        states = torch.tensor(
-            states, dtype=torch.float32, device=Config.DEVICE
-        )
-        policies = torch.tensor(
-            policies, dtype=torch.float32, device=Config.DEVICE
-        )
-        values = torch.tensor(
-            values, dtype=torch.float32, device=Config.DEVICE
-        )
+        states = torch.tensor(states, dtype=torch.float32, device=Config.DEVICE)
+        policies = torch.tensor(policies, dtype=torch.float32, device=Config.DEVICE)
+        values = torch.tensor(values, dtype=torch.float32, device=Config.DEVICE)
         dataset = TensorDataset(states, policies, values)
         loader = DataLoader(dataset, batch_size=self.batch_size, shuffle=True)
         for _ in range(self.epochs):
@@ -48,7 +41,7 @@ class Trainer:
                 v_target = v_target.to(Config.DEVICE)
                 log_p, v = self.network(s)
                 loss_policy = -(p_target * log_p).sum(dim=1).mean()
-                loss_value = torch.mean((v.view(-1) - v_target)**2)
+                loss_value = torch.mean((v.view(-1) - v_target) ** 2)
                 loss = loss_policy + loss_value
                 self.optimizer.zero_grad()
                 loss.backward()

@@ -1,12 +1,14 @@
 import chess
 
+from .action_index import index_to_move
+from .config import Config
 from .game_environment import GameEnvironment
 from .mcts import MCTS
-from .config import Config
-from .action_index import index_to_move
 
 
-def evaluate(net_a, net_b, num_games: int = 10, num_simulations: int = Config.NUM_SIMULATIONS):
+def evaluate(
+    net_a, net_b, num_games: int = 10, num_simulations: int = Config.NUM_SIMULATIONS
+):
     stats = {"wins": 0, "losses": 0, "draws": 0}
     for g in range(num_games):
         env = GameEnvironment()

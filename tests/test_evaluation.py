@@ -1,8 +1,8 @@
 import torch
 
-from chess_ai.evaluation import evaluate
 from chess_ai.action_index import ACTION_SIZE
 from chess_ai.config import Config
+from chess_ai.evaluation import evaluate
 
 
 class DummyNet(torch.nn.Module):

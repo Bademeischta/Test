@@ -13,7 +13,12 @@ class LMDBReplayBuffer:
     META_NEXT = b"next"
     META_SIZE = b"size"
 
-    def __init__(self, path: str, capacity: int = Config.REPLAY_BUFFER_SIZE, map_size: int = 1 << 30):
+    def __init__(
+        self,
+        path: str,
+        capacity: int = Config.REPLAY_BUFFER_SIZE,
+        map_size: int = 1 << 30,
+    ):
         self.env = lmdb.open(os.path.expanduser(path), map_size=map_size)
         self.capacity = capacity
         with self.env.begin(write=True) as txn:
@@ -76,7 +81,7 @@ class LMDBReplayBuffer:
         if batch_size > size:
             raise ValueError("Batch size larger than buffer")
         priorities = self._get_priorities(size)
-        probs = priorities ** alpha
+        probs = priorities**alpha
         probs /= probs.sum()
         indices = np.random.choice(size, size=batch_size, p=probs)
         indices = np.sort(indices)
