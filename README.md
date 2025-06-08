@@ -117,9 +117,6 @@ entsteht ein rauschärmerer Datensatz.
 
 ## Tests
 
-
-
-
 Die Tests prüfen das Board-Encoding, MCTS, Replay Buffer und das Verhalten von
 `is_quiet_move()`.
 
@@ -131,6 +128,33 @@ Die Tests prüfen das Board-Encoding, MCTS, Replay Buffer und das Verhalten von
 * Temperaturgesteuerte Zugauswahl beim Selbstspiel
 * Helfer zum Laden von Checkpoints im NetworkManager
 * LMDB-basierter ReplayBuffer f\xC3\xBCr gro\xC3\x9Fe Datens\xC3\xA4tze
+
+## Trainer-Optimierung mit PyTorch Lightning
+
+Das Policy- und NNUE-Training verwendet in den Beispielskripten weitgehend die
+Standardwerte des Lightning-Trainers. Mit den folgenden Ansatzpunkten kannst du
+den Trainingsablauf deutlich robuster und effizienter gestalten:
+
+1. **Lernraten-Scheduler** – statt fester Lernrate einen Scheduler wie
+   OneCycleLR oder CosineAnnealing einsetzen, um zu Beginn sanft anzulernen und
+   am Ende besser zu konvergieren.
+2. **Callbacks aktivieren** – ModelCheckpoint und EarlyStopping sichern die
+   besten Modelle automatisch, ein Profiler deckt Bottlenecks auf.
+3. **Gradient Accumulation & Clipping** – \`accumulate_grad_batches\` erlaubt
+   gro\xC3\x9Fe effektive Batch-Gr\xC3\xB6\xC3\x9Fen ohne zus\xC3\xA4tzlichen GPU-Speicher,
+   \`gradient_clip_val\` stabilisiert das Training.
+4. **Mixed Precision & verteiltes Training** – sowohl f\xC3\xBCr Policy als auch
+   NNUE \`precision="bf16-mixed"\` nutzen und bei mehreren GPUs DDP oder FSDP
+   einschalten.
+5. **Datenpipeline optimieren** – den LMDB-Buffer per DataModule einbinden und
+   mit \`persistent_workers=True\` sowie erh\xC3\xB6htem \`prefetch_factor\` den
+   Datenfluss beschleunigen.
+6. **Hyperparameter-Suche** – \`Tuner\` zusammen mit Optuna oder Ray Tune
+   automatisiert die besten Parameter finden lassen.
+7. **Curriculum Learning** – im Selbstspiel zun\xC3\xA4chst gegen leichtere Gegner
+   antreten und die Schwierigkeit progressiv steigern.
+8. **Monitoring** – TensorBoard oder Weights & Biases f\xC3\xBCr Live-Logging der
+   Metriken und Lernraten verwenden.
 
 ## Hintergrund und Ausblick
 
