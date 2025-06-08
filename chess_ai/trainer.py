@@ -22,9 +22,7 @@ class Trainer:
         self.epochs = epochs
 
     def train(self):
-        """
-        Train the network for one epoch using data from the replay buffer.
-        """
+        """Train the network using data from the replay buffer."""
 
         if len(self.buffer) < self.batch_size:
             return
@@ -34,7 +32,8 @@ class Trainer:
         values = torch.tensor(values, dtype=torch.float32, device=Config.DEVICE)
         dataset = TensorDataset(states, policies, values)
         loader = DataLoader(dataset, batch_size=self.batch_size, shuffle=True)
-        for _ in range(self.epochs):
+        for epoch in range(self.epochs):
+            epoch_loss = 0.0
             for s, p_target, v_target in loader:
                 s = s.to(Config.DEVICE)
                 p_target = p_target.to(Config.DEVICE)
@@ -47,3 +46,6 @@ class Trainer:
                 loss.backward()
                 torch.nn.utils.clip_grad_norm_(self.network.parameters(), 5.0)
                 self.optimizer.step()
+                epoch_loss += loss.item()
+            avg_loss = epoch_loss / len(loader)
+            print(f"Epoch {epoch + 1}/{self.epochs} - loss {avg_loss:.4f}")

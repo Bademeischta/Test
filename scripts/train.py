@@ -41,12 +41,21 @@ def main(args):
     buffer = ReplayBuffer()
 
     for g in range(args.games):
+codex/erweiterungen-für-python--und-c++-komponenten-planen
         for state, policy, value in run_self_play(
             net, num_simulations=args.simulations
         ):
+
+        print(f"Generating game {g + 1}/{args.games}...")
+        for state, policy, value in run_self_play(net, num_simulations=args.simulations):
+main
             buffer.add(state, policy, value)
+    print(f"Collected {len(buffer)} training positions.")
+
+    print("Starting training...")
     trainer = Trainer(net, buffer, optimizer, epochs=args.epochs)
     trainer.train()
+    print("Saving checkpoint...")
     manager.save(net, optimizer, "latest")
 
 

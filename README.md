@@ -58,6 +58,48 @@ Step 2: value=0.00
 Self-play finished successfully.
 ```
 
+### Training
+
+Ein komplettes Trainingsspielzeug befindet sich unter `scripts/train.py`. Die
+Länge des Trainings kannst du über die Kommandozeilenargumente selbst
+bestimmen:
+
+```bash
+python scripts/train.py --games 5 --epochs 3 --simulations 50
+```
+
+* `--games` legt fest, wie viele Selbstpartien generiert werden.
+* `--epochs` gibt die Anzahl der Trainingsdurchläufe über den Buffer an.
+* `--simulations` steuert die MCTS-Suchtiefe pro Zug.
+
+Während des Trainings erscheinen nun kurze Statistiken zu jedem Epoch.
+
+### Gegen die KI spielen
+
+Nach dem Training kannst du mit folgendem Skript gegen das neueste Netz
+antreten:
+
+```bash
+python scripts/play_vs_ai.py --simulations 100
+```
+
+Per `--play-white` wählst du deine Farbe.
+
+### C++-Engine nutzen
+
+Die Verzeichnisse unter `superengine/` enthalten eine experimentelle
+C++-Engine. Sie wird beim Aufruf von `./scripts/install.sh` automatisch mit
+`cmake` und `make` gebaut. Anschließend kannst du in `superengine/build` die
+erzeugten Testprogramme ausführen, z.B.:
+
+```bash
+cd superengine/build
+ctest
+```
+
+Die Datei `main.cpp` demonstriert zudem eine einfache UCI-Schnittstelle, die du
+nach einem eigenen Build als Einstieg für weitere Experimente verwenden kannst.
+
 Alle Parameter befinden sich in `chess_ai/config.py`. Das Flag
 `FILTER_QUIET_POSITIONS` bewirkt, dass nur Stellungen gespeichert werden, in
 denen der gewählte Zug weder eine Figur schlägt noch ein Schach bietet. So
