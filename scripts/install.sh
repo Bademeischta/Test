@@ -5,6 +5,7 @@ set -e
 if [ -f "requirements.txt" ]; then
   echo "Installing Python requirements..."
   pip install -r requirements.txt
+  pip install -e .
 fi
 
 # Optional build of the C++ superengine
