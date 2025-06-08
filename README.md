@@ -202,7 +202,7 @@ Repository verfolgen kannst.
 
  - [x] `extract_features` (Half‑KP) implementieren
  - [x] Vorwärtsdurchlauf (Eval) fertigstellen
-- [ ] Python‑Tools zum Trainieren und Quantisieren
+ - [x] Python‑Tools zum Trainieren und Quantisieren
  - [x] Catch2‑Tests für geladene Netze
 
 #### 1.4 Tests & CI
