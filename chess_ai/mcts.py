@@ -46,17 +46,12 @@ class MCTS:
         self.network = network.to(Config.DEVICE)
         self.c_puct = c_puct
         self.num_simulations = num_simulations
+        # Cache board evaluations to avoid redundant network calls
+        self._eval_cache = {}
 
     def run(self, root_board: chess.Board):
         root = MCTSNode(root_board.copy())
-        state_tensor = torch.tensor(
-            GameEnvironment.encode_board(root.board),
-            dtype=torch.float32,
-            device=Config.DEVICE,
-        ).unsqueeze(0)
-        with torch.no_grad():
-            log_p, v = self.network(state_tensor)
-        policy = torch.exp(log_p[0]).cpu().numpy()
+        policy, _ = self._evaluate(root.board)
         root.expand(policy, list(root.board.legal_moves))
         moves = list(root.P.keys())
         if moves:
@@ -77,19 +72,26 @@ class MCTS:
                     node.children[move] = MCTSNode(child_board, parent=node)
                 node = node.children[move]
 
-            state_tensor = torch.tensor(
-                GameEnvironment.encode_board(node.board),
-                dtype=torch.float32,
-                device=Config.DEVICE,
-            ).unsqueeze(0)
-            with torch.no_grad():
-                log_p, v = self.network(state_tensor)
-            policy = torch.exp(log_p[0]).cpu().numpy()
+            policy, value = self._evaluate(node.board)
             node.expand(policy, list(node.board.legal_moves))
-            value = v.item()
             for parent, move in reversed(search_path):
                 parent.N[move] += 1
                 parent.W[move] += value
                 parent.Q[move] = parent.W[move] / parent.N[move]
                 value = -value
         return {move_to_index(m): root.N[m] for m in root.P}
+
+    def _evaluate(self, board: chess.Board):
+        """Return policy and value for a board using the network with caching."""
+        fen = board.board_fen() + (" w" if board.turn == chess.WHITE else " b")
+        if fen not in self._eval_cache:
+            state_tensor = torch.tensor(
+                GameEnvironment.encode_board(board),
+                dtype=torch.float32,
+                device=Config.DEVICE,
+            ).unsqueeze(0)
+            with torch.no_grad():
+                log_p, v = self.network(state_tensor)
+            policy = torch.exp(log_p[0]).cpu().numpy()
+            self._eval_cache[fen] = (policy, v.item())
+        return self._eval_cache[fen]

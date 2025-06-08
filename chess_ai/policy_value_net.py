@@ -42,6 +42,7 @@ class PolicyValueNet(nn.Module):
         self.conv_value = nn.Conv2d(filters, 1, kernel_size=1)
         self.bn_value = nn.BatchNorm2d(1)
         self.fc_value1 = nn.Linear(1 * 8 * 8, 256)
+        self.dropout = nn.Dropout(p=0.3)
         self.fc_value2 = nn.Linear(256, 1)
 
         for m in self.modules():
@@ -68,5 +69,6 @@ class PolicyValueNet(nn.Module):
         v = F.relu(self.bn_value(self.conv_value(x)))
         v = v.view(v.size(0), -1)
         v = F.relu(self.fc_value1(v))
+        v = self.dropout(v)
         v = torch.tanh(self.fc_value2(v))
         return p, v
