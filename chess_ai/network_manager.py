@@ -21,3 +21,11 @@ class NetworkManager:
         path = os.path.join(self.checkpoint_dir, f"{name}.pt")
         torch.save({"model_state": model.state_dict(), "optim_state": optimizer.state_dict()}, path)
         return path
+
+    def load(self, path, model, optimizer=None):
+        """Load a checkpoint into ``model`` and optionally ``optimizer``."""
+        checkpoint = torch.load(path, map_location=Config.DEVICE)
+        model.load_state_dict(checkpoint["model_state"])
+        if optimizer and "optim_state" in checkpoint:
+            optimizer.load_state_dict(checkpoint["optim_state"])
+        return checkpoint

@@ -68,6 +68,14 @@ entsteht ein rauschärmerer Datensatz.
 Die Tests prüfen das Board-Encoding, MCTS, Replay Buffer und das Verhalten von
 `is_quiet_move()`.
 
+## Verbesserungen in dieser Version
+
+* Caching der Netzwerk-Auswertungen im MCTS für schnellere Simulationen
+* Prioritized Experience Replay im ReplayBuffer
+* Gradienten-Clipping im Trainer
+* Temperaturgesteuerte Zugauswahl beim Selbstspiel
+* Helfer zum Laden von Checkpoints im NetworkManager
+
 ## Hintergrund und Ausblick
 
 Die Codebasis orientiert sich an modernen Engines, die klassische Alpha-Beta-

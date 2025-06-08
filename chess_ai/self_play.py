@@ -19,7 +19,16 @@ def run_self_play(network, num_simulations: int = Config.NUM_SIMULATIONS):
         pi = np.zeros(ACTION_SIZE, dtype=np.float32)
         for idx, c in visit_counts.items():
             pi[idx] = c
-        best_move_idx = max(visit_counts, key=visit_counts.get)
+        temperature = 1.0 if len(trajectory) < 10 else 0.5
+        counts = np.array([visit_counts[m] for m in visit_counts], dtype=np.float32)
+        move_indices = list(visit_counts.keys())
+        if temperature == 0:
+            chosen = np.argmax(counts)
+        else:
+            probs = counts ** (1.0 / temperature)
+            probs /= probs.sum()
+            chosen = np.random.choice(len(move_indices), p=probs)
+        best_move_idx = move_indices[chosen]
         move = index_to_move(best_move_idx)
         is_quiet = env.is_quiet_move(move)
         if not Config.FILTER_QUIET_POSITIONS or is_quiet:
