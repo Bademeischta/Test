@@ -51,7 +51,7 @@ int Search::pv_node(Position& pos, int alpha, int beta, int depth) {
     int eval = nnue::eval(pos);
     if (eval >= beta) return eval;
 
-    auto moves = movegen::generate_moves(pos);
+    moves = movegen::generate_moves(pos);
     for (size_t i = 0; i < moves.size(); ++i) {
         Position next = pos;
         next.do_move(moves[i]);

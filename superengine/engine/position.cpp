@@ -74,17 +74,21 @@ Piece Position::piece_on(int sq) const {
 }
 
 bool Position::in_check(Color c) const {
-    int king_sq = -1;
+    movegen::init_attack_tables();
     Bitboard king_bb = piece_bb[c][KING];
-    if(king_bb) king_sq = __builtin_ctzll(king_bb);
-    if(king_sq == -1) return false;
-    Color opp = c==WHITE?BLACK:WHITE;
-    Position tmp = *const_cast<Position*>(this);
-    tmp.side = opp;
-    movegen::MoveList moves = movegen::generate_pseudo_moves(tmp);
-    for(const auto& m: moves){
-        if(m.to == king_sq) return true;
-    }
+    if(!king_bb) return false;
+    int king_sq = __builtin_ctzll(king_bb);
+    Color o = c==WHITE?BLACK:WHITE;
+    if(movegen::KNIGHT_ATTACKS[king_sq] & piece_bb[o][KNIGHT]) return true;
+    Bitboard pawn_attacks = c==WHITE ?
+        ((piece_bb[o][PAWN] & ~bb::FILE_H) << 9 | (piece_bb[o][PAWN] & ~bb::FILE_A) << 7) :
+        ((piece_bb[o][PAWN] & ~bb::FILE_A) >> 9 | (piece_bb[o][PAWN] & ~bb::FILE_H) >> 7);
+    if(pawn_attacks & king_bb) return true;
+    Bitboard rookers = piece_bb[o][ROOK] | piece_bb[o][QUEEN];
+    if(movegen::rook_attacks(king_sq, all_occupied) & rookers) return true;
+    Bitboard bishops = piece_bb[o][BISHOP] | piece_bb[o][QUEEN];
+    if(movegen::bishop_attacks(king_sq, all_occupied) & bishops) return true;
+    if(movegen::KING_ATTACKS[king_sq] & piece_bb[o][KING]) return true;
     return false;
 }
 

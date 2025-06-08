@@ -27,6 +27,10 @@ add_executable(test_movegen tests/test_movegen.cpp)
 target_link_libraries(test_movegen PRIVATE engine Catch2::Catch2WithMain)
 add_test(NAME test_movegen COMMAND test_movegen)
 
+add_executable(test_sliding tests/test_sliding.cpp)
+target_link_libraries(test_sliding PRIVATE engine Catch2::Catch2WithMain)
+add_test(NAME test_sliding COMMAND test_sliding)
+
 add_executable(test_position tests/test_position.cpp)
 target_link_libraries(test_position PRIVATE engine Catch2::Catch2WithMain)
 add_test(NAME test_position COMMAND test_position)

@@ -52,4 +52,5 @@ class Trainer:
                 loss = loss_policy + loss_value
                 self.optimizer.zero_grad()
                 loss.backward()
+                torch.nn.utils.clip_grad_norm_(self.network.parameters(), 5.0)
                 self.optimizer.step()
