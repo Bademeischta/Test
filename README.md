@@ -29,13 +29,16 @@ demonstrieren.
 ```
 
 Dies installiert alle Python-Abhängigkeiten und baut standardmäßig auch die C++
-Engine in `superengine/`.
+Engine in `superengine/`. Zusätzlich wird das Projekt selbst im
+Entwicklungsmodus installiert.
 Wer nur die Python-Funktionalität benötigt, kann stattdessen einfach
 
 ```bash
 pip install -r requirements.txt
+pip install -e .
 ```
-ausführen und den Engine-Build überspringen.
+ausführen und den Engine-Build überspringen. Das zusätzliche `pip install -e .`
+stellt sicher, dass das `chess_ai`-Paket korrekt eingebunden ist.
 
 ## Verwendung
 
