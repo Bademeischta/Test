@@ -1,15 +1,16 @@
 #!/usr/bin/env python
 """Play a game against the latest trained network."""
 import argparse
+
 import chess
 import torch
 
+from chess_ai.action_index import ACTION_SIZE, index_to_move
 from chess_ai.config import Config
 from chess_ai.game_environment import GameEnvironment
-from chess_ai.policy_value_net import PolicyValueNet
-from chess_ai.action_index import ACTION_SIZE, index_to_move
 from chess_ai.mcts import MCTS
 from chess_ai.network_manager import NetworkManager
+from chess_ai.policy_value_net import PolicyValueNet
 
 
 def load_network(manager: NetworkManager) -> PolicyValueNet:
@@ -56,6 +57,13 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Play against the trained AI")
-    parser.add_argument("--play-white", action="store_true", help="Play as white instead of black")
-    parser.add_argument("--simulations", type=int, default=Config.NUM_SIMULATIONS, help="MCTS simulations for AI moves")
+    parser.add_argument(
+        "--play-white", action="store_true", help="Play as white instead of black"
+    )
+    parser.add_argument(
+        "--simulations",
+        type=int,
+        default=Config.NUM_SIMULATIONS,
+        help="MCTS simulations for AI moves",
+    )
     main(parser.parse_args())

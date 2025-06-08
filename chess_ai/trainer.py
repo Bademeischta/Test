@@ -1,6 +1,5 @@
 """Training utilities for the chess network."""
 
-
 import torch
 from torch.utils.data import DataLoader, TensorDataset
 

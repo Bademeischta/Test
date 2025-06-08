@@ -1,13 +1,13 @@
 import math
 from collections import defaultdict
 
+import chess
 import numpy as np
 import torch
-import chess
 
+from .action_index import move_to_index
 from .config import Config
 from .game_environment import GameEnvironment
-from .action_index import move_to_index
 
 
 class MCTSNode:
@@ -32,9 +32,11 @@ class MCTSNode:
 
     def select(self, c_puct):
         total_visits = sum(self.N[m] for m in self.P)
-        best_move, best_score = None, -float('inf')
+        best_move, best_score = None, -float("inf")
         for move in self.P:
-            u = self.Q[move] + c_puct * self.P[move] * math.sqrt(total_visits) / (1 + self.N[move])
+            u = self.Q[move] + c_puct * self.P[move] * math.sqrt(total_visits) / (
+                1 + self.N[move]
+            )
             if u > best_score:
                 best_score = u
                 best_move = move
@@ -42,7 +44,12 @@ class MCTSNode:
 
 
 class MCTS:
-    def __init__(self, network, c_puct: float = Config.C_PUCT, num_simulations: int = Config.NUM_SIMULATIONS):
+    def __init__(
+        self,
+        network,
+        c_puct: float = Config.C_PUCT,
+        num_simulations: int = Config.NUM_SIMULATIONS,
+    ):
         self.network = network.to(Config.DEVICE)
         self.c_puct = c_puct
         self.num_simulations = num_simulations
@@ -57,7 +64,9 @@ class MCTS:
         if moves:
             noise = np.random.dirichlet([Config.DIRICHLET_ALPHA] * len(moves))
             for idx, m in enumerate(moves):
-                root.P[m] = (1 - Config.DIRICHLET_EPSILON) * root.P[m] + Config.DIRICHLET_EPSILON * noise[idx]
+                root.P[m] = (1 - Config.DIRICHLET_EPSILON) * root.P[
+                    m
+                ] + Config.DIRICHLET_EPSILON * noise[idx]
 
         for _ in range(self.num_simulations):
             node = root

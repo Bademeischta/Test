@@ -38,9 +38,9 @@ class GameEnvironment:
         reward = 0.0
         if done:
             result = self.board.result()
-            if result == '1-0':
+            if result == "1-0":
                 reward = 1.0
-            elif result == '0-1':
+            elif result == "0-1":
                 reward = -1.0
             else:
                 reward = 0.0

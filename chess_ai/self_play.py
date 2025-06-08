@@ -1,9 +1,9 @@
 import numpy as np
 
+from .action_index import ACTION_SIZE, index_to_move
+from .config import Config
 from .game_environment import GameEnvironment
 from .mcts import MCTS
-from .config import Config
-from .action_index import ACTION_SIZE, index_to_move
 
 
 def run_self_play(network, num_simulations: int = Config.NUM_SIMULATIONS):

@@ -1,4 +1,3 @@
-import numpy as np
 from chess_ai.game_environment import GameEnvironment
 
 

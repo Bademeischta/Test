@@ -19,7 +19,10 @@ class NetworkManager:
 
     def save(self, model, optimizer, name):
         path = os.path.join(self.checkpoint_dir, f"{name}.pt")
-        torch.save({"model_state": model.state_dict(), "optim_state": optimizer.state_dict()}, path)
+        torch.save(
+            {"model_state": model.state_dict(), "optim_state": optimizer.state_dict()},
+            path,
+        )
         return path
 
     def load(self, path, model, optimizer=None):
