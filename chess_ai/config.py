@@ -8,7 +8,12 @@ class Config:
     WANDB_PROJECT = "chess-ai"
 
     # Hardware
-    DEVICE = "cuda" if __import__('torch').cuda.is_available() else "cpu"
+    # Always prefer CUDA when available so the network trains on GPUs like the
+    # RTX 5070.  A ``torch.device`` object is used to avoid string/device
+    # mismatches across the codebase.
+    DEVICE = __import__("torch").device(
+        "cuda:0" if __import__("torch").cuda.is_available() else "cpu"
+    )
     SEED = 42
 
     # MCTS parameters

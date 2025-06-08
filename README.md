@@ -77,6 +77,10 @@ Während des Trainings erscheinen nun kurze Statistiken zu jedem Epoch.
 
 ### GPU Setup
 
+Der Parameter ``Config.DEVICE`` wählt nun automatisch ``"cuda:0"`` aus, wenn
+eine kompatible GPU verfügbar ist. Damit läuft das Training direkt auf der RTX
+5070 oder anderen CUDA-Geräten.
+
 Falls deine GPU von der offiziellen PyTorch-Distribution nicht unterstützt wird,
 musst du PyTorch selbst kompilieren. Setze dazu beispielsweise
 
