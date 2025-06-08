@@ -1,4 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
+
 #include "position.h"
 
 TEST_CASE("Fen parsing extras", "[position]") {
@@ -14,8 +15,8 @@ TEST_CASE("Fen parsing extras", "[position]") {
 
 TEST_CASE("Fen with en passant target", "[position]") {
     Position pos("rnbqkbnr/pppppppp/8/8/8/4P3/PPPP1PPP/RNBQKBNR b KQkq e3 0 1");
-    REQUIRE(pos.en_passant == 20); // e3 square index
+    REQUIRE(pos.en_passant == 20);  // e3 square index
     REQUIRE(pos.side_to_move() == BLACK);
     REQUIRE(pos.castling_rights == 0b1111);
-    REQUIRE(pos.piece_on(20) == PAWN); // white pawn on e3
+    REQUIRE(pos.piece_on(20) == PAWN);  // white pawn on e3
 }

@@ -12,4 +12,4 @@ Bitboard north_west(Bitboard b) { return (b & ~FILE_A) << 7; }
 Bitboard south_east(Bitboard b) { return (b & ~FILE_H) >> 7; }
 Bitboard south_west(Bitboard b) { return (b & ~FILE_A) >> 9; }
 
-}
+}  // namespace bb
