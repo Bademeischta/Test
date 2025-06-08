@@ -98,6 +98,30 @@ void Position::do_move(const movegen::Move& m){
     Color opp = c==WHITE?BLACK:WHITE;
     Bitboard from_mask = 1ULL<<m.from;
     Bitboard to_mask   = 1ULL<<m.to;
+    Piece captured_piece = piece_on(m.to);
+    // update castling rights on capture of rooks
+    if(captured_piece == ROOK){
+        if(opp == WHITE){
+            if(m.to == 0) castling_rights &= ~2; // white queenside rook captured
+            if(m.to == 7) castling_rights &= ~1; // white kingside rook captured
+        }else{
+            if(m.to == 56) castling_rights &= ~8; // black queenside rook captured
+            if(m.to == 63) castling_rights &= ~4; // black kingside rook captured
+        }
+    }
+    // update castling rights when moving king or rook
+    if(pc == KING){
+        if(c==WHITE) castling_rights &= ~3; else castling_rights &= ~12;
+    }
+    if(pc == ROOK){
+        if(c==WHITE){
+            if(m.from == 0) castling_rights &= ~2;
+            if(m.from == 7) castling_rights &= ~1;
+        }else{
+            if(m.from == 56) castling_rights &= ~8;
+            if(m.from == 63) castling_rights &= ~4;
+        }
+    }
     // handle en-passant capture
     if(pc == PAWN && m.to == en_passant && en_passant != -1){
         Bitboard cap_mask = c==WHITE ? (to_mask>>8) : (to_mask<<8);
@@ -113,6 +137,31 @@ void Position::do_move(const movegen::Move& m){
     {
         piece_bb[c][pc] &= ~to_mask;
         piece_bb[c][m.promo] |= to_mask;
+    }
+    // handle castling rook move
+    if(pc == KING){
+        if(c==WHITE){
+            if(m.from==4 && m.to==6){
+                // king side
+                Bitboard rfrom=1ULL<<7, rto=1ULL<<5;
+                for(int p=0;p<PIECE_NB;++p){ piece_bb[c][p] &= ~rfrom; piece_bb[c][p] &= ~rto; }
+                piece_bb[c][ROOK] |= rto;
+            }else if(m.from==4 && m.to==2){
+                Bitboard rfrom=1ULL<<0, rto=1ULL<<3;
+                for(int p=0;p<PIECE_NB;++p){ piece_bb[c][p] &= ~rfrom; piece_bb[c][p] &= ~rto; }
+                piece_bb[c][ROOK] |= rto;
+            }
+        }else{
+            if(m.from==60 && m.to==62){
+                Bitboard rfrom=1ULL<<63, rto=1ULL<<61;
+                for(int p=0;p<PIECE_NB;++p){ piece_bb[c][p] &= ~rfrom; piece_bb[c][p] &= ~rto; }
+                piece_bb[c][ROOK] |= rto;
+            }else if(m.from==60 && m.to==58){
+                Bitboard rfrom=1ULL<<56, rto=1ULL<<59;
+                for(int p=0;p<PIECE_NB;++p){ piece_bb[c][p] &= ~rfrom; piece_bb[c][p] &= ~rto; }
+                piece_bb[c][ROOK] |= rto;
+            }
+        }
     }
     en_passant = -1;
     if(pc==PAWN){

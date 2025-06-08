@@ -37,3 +37,15 @@ TEST_CASE("Start position legal move count", "[movegen]") {
     auto moves = movegen::generate_moves(pos);
     REQUIRE(moves.size() == 20);
 }
+
+TEST_CASE("Castling move updates board", "[movegen]") {
+    Position pos("r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1");
+    movegen::Move castle{4,6,0};
+    pos.do_move(castle);
+    REQUIRE(pos.piece_on(6) == KING);
+    REQUIRE(pos.piece_on(5) == ROOK);
+    REQUIRE(pos.piece_on(4) == PIECE_NB);
+    REQUIRE(pos.piece_on(7) == PIECE_NB);
+    REQUIRE(pos.castling_rights == 12);
+    REQUIRE(pos.side_to_move() == BLACK);
+}
