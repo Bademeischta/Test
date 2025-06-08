@@ -23,34 +23,30 @@ class Trainer:
         self.epochs = epochs
 
     def train(self):
-        """
-        Train the network for one epoch using data from the replay buffer.
-        """
+        """Train the network using data from the replay buffer."""
 
         if len(self.buffer) < self.batch_size:
             return
         states, policies, values = self.buffer.sample(self.batch_size)
-        states = torch.tensor(
-            states, dtype=torch.float32, device=Config.DEVICE
-        )
-        policies = torch.tensor(
-            policies, dtype=torch.float32, device=Config.DEVICE
-        )
-        values = torch.tensor(
-            values, dtype=torch.float32, device=Config.DEVICE
-        )
+        states = torch.tensor(states, dtype=torch.float32, device=Config.DEVICE)
+        policies = torch.tensor(policies, dtype=torch.float32, device=Config.DEVICE)
+        values = torch.tensor(values, dtype=torch.float32, device=Config.DEVICE)
         dataset = TensorDataset(states, policies, values)
         loader = DataLoader(dataset, batch_size=self.batch_size, shuffle=True)
-        for _ in range(self.epochs):
+        for epoch in range(self.epochs):
+            epoch_loss = 0.0
             for s, p_target, v_target in loader:
                 s = s.to(Config.DEVICE)
                 p_target = p_target.to(Config.DEVICE)
                 v_target = v_target.to(Config.DEVICE)
                 log_p, v = self.network(s)
                 loss_policy = -(p_target * log_p).sum(dim=1).mean()
-                loss_value = torch.mean((v.view(-1) - v_target)**2)
+                loss_value = torch.mean((v.view(-1) - v_target) ** 2)
                 loss = loss_policy + loss_value
                 self.optimizer.zero_grad()
                 loss.backward()
                 torch.nn.utils.clip_grad_norm_(self.network.parameters(), 5.0)
                 self.optimizer.step()
+                epoch_loss += loss.item()
+            avg_loss = epoch_loss / len(loader)
+            print(f"Epoch {epoch + 1}/{self.epochs} - loss {avg_loss:.4f}")
