@@ -31,7 +31,10 @@ demonstrieren.
 
 Dies installiert alle Python-Abhängigkeiten und baut standardmäßig auch die C++
 Engine in `superengine/`. Zusätzlich wird das Projekt selbst im
-Entwicklungsmodus installiert.
+Entwicklungsmodus installiert. Das Skript prüft dabei, ob ein
+`make`-Kommando verfügbar ist. Fehlt es, versucht es automatisch die nötigen
+Build-Werkzeuge zu installieren – unter Linux per `apt`, unter Windows über
+`Chocolatey` (wird bei Bedarf ebenfalls installiert).
 Wer nur die Python-Funktionalität benötigt, kann stattdessen einfach
 
 ```bash
