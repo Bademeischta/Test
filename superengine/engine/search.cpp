@@ -1,6 +1,7 @@
 #include "search.h"
 
 #include <algorithm>
+#include <thread>
 
 #include "nnue_eval.h"
 
@@ -9,6 +10,29 @@ static const int MVV[6] = {100, 320, 330, 500, 900, 20000};
 constexpr int INF = 32000;
 
 int Search::search(Position& pos, int depth) { return pv_node(pos, -INF, INF, depth); }
+
+int Search::search(Position& pos, int depth, int threads) {
+    nodes_ = 0;
+    start_ = std::chrono::steady_clock::now();
+    auto moves = movegen::generate_moves(pos);
+    if (moves.empty()) return pos.in_check(pos.side) ? -INF : 0;
+    int best = -INF;
+    std::mutex m;
+    std::vector<std::thread> ts;
+    for (int t = 0; t < threads; ++t) {
+        ts.emplace_back([&, t]() {
+            for (size_t i = t; i < moves.size(); i += threads) {
+                Position next = pos;
+                next.do_move(moves[i]);
+                int score = -pv_node(next, -INF, INF, depth - 1);
+                std::lock_guard<std::mutex> lk(m);
+                if (score > best) best = score;
+            }
+        });
+    }
+    for (auto& th : ts) th.join();
+    return best;
+}
 
 int Search::search(Position& pos, const Limits& limits) {
     limits_ = limits;
@@ -29,8 +53,11 @@ int Search::pv_node(Position& pos, int alpha, int beta, int depth) {
     if (stop()) return nnue::eval(pos);
 
     auto key = pos.to_fen();
-    auto it = tt.find(key);
-    if (it != tt.end() && it->second.depth >= depth) return it->second.score;
+    {
+        std::lock_guard<std::mutex> lk(tt_mutex_);
+        auto it = tt.find(key);
+        if (it != tt.end() && it->second.depth >= depth) return it->second.score;
+    }
 
     auto moves = movegen::generate_legal_moves(pos);
     if (moves.empty()) return pos.in_check(pos.side) ? -INF + depth : 0;
@@ -125,6 +152,7 @@ bool Search::stop() const {
 }
 
 void Search::store_tt(const std::string& key, TTEntry entry) {
+    std::lock_guard<std::mutex> lk(tt_mutex_);
     auto it = tt.find(key);
     if (it == tt.end()) {
         if (tt.size() >= TT_MAX) tt.erase(tt.begin());
