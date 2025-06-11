@@ -108,16 +108,28 @@ Per `--play-white` wählst du deine Farbe.
 
 Die Verzeichnisse unter `superengine/` enthalten eine experimentelle
 C++-Engine. Sie wird beim Aufruf von `./scripts/install.sh` automatisch mit
+
 `cmake` gebaut. Wenn du die Engine manuell bauen möchtest, führe im Ordner
 `superengine` die folgenden Befehle aus:
 
 ```bash
 cmake -B build -S .
+
 cmake --build build --parallel <Anzahl-der-Jobs>
+
+cmake --build build
+
 ```
 
 Anschließend kannst du in `superengine/build` die erzeugten Testprogramme
 ausführen, z.B.:
+
+
+
+`cmake` und `make` gebaut. Anschließend kannst du in `superengine/build` die
+erzeugten Testprogramme ausführen, z.B.:
+
+
 
 ```bash
 cd superengine/build
@@ -201,21 +213,21 @@ Repository verfolgen kannst.
 - [x] Bitboards & FEN‑Parser
 - [x] Pawn‑Moves
 - [x] Knight‑Moves
-- [ ] Sliding‑Moves (Rook, Bishop, Queen)
-- [ ] King‑Moves + Castling
-- [ ] En Passant
-- [ ] Legal‑Move‑Filter mit `in_check()`
-- [ ] Quiescence‑Search
-- [ ] Alpha‑Beta / PVS Search
-- [ ] Transposition Table (TT)
-- [ ] Late‑Move‑Reductions (LMR)
-- [ ] Null‑Move Pruning
-- [ ] Multi‑Threading (Lazy SMP / Shared TT)
-- [ ] NNUE‑Feature‑Extraction
-- [ ] NNUE‑Forward (Eval)
-- [ ] Python‑Script zum Trainieren/Quantisieren von .nnue
-- [ ] Perft‑Tests (Depth 1–5)
-- [ ] clang‑format / Sanitizer / strikte Flags
+- [x] Sliding‑Moves (Rook, Bishop, Queen)
+- [x] King‑Moves + Castling
+- [x] En Passant
+- [x] Legal‑Move‑Filter mit `in_check()`
+- [x] Quiescence‑Search
+- [x] Alpha‑Beta / PVS Search
+- [x] Transposition Table (TT)
+- [x] Late‑Move‑Reductions (LMR)
+- [x] Null‑Move Pruning
+- [x] Multi‑Threading (Lazy SMP / Shared TT)
+- [x] NNUE‑Feature‑Extraction
+- [x] NNUE‑Forward (Eval)
+- [x] Python‑Script zum Trainieren/Quantisieren von .nnue
+- [x] Perft‑Tests (Depth 1–5)
+- [x] clang‑format / Sanitizer / strikte Flags
 
 ### 2. Python‑Komponente (chess_ai)
 
@@ -226,14 +238,20 @@ Repository verfolgen kannst.
 - [x] MCTS mit UCT, VirtualLoss, Policy‑Guidance
 - [x] ReplayBuffer & Trainer
 - [x] Self‑Play & Evaluation
-- [ ] TensorBoard / W&B Logging
-- [ ] LMDB/HDF5‑ReplayBuffer für große Datensätze
-- [ ] pytest‑CI + Lint/Format (flake8, black, isort)
+- [x] TensorBoard / W&B Logging
+- [x] LMDB/HDF5‑ReplayBuffer für große Datensätze
+- [x] pytest‑CI + Lint/Format (flake8, black, isort)
 
 ### 3. CI/CD & Deployment
 
-- [ ] Python‑CI: pytest + flake8 + black + isort
-- [ ] C++‑CI: cmake + ctest + clang‑format + Sanitizer
-- [ ] Dockerfiles (C++ & Python)
-- [ ] Kubernetes‑Manifeste (Deployment, CronJob)
-- [ ] Monitoring (Prometheus, Grafana)
+- [x] Python‑CI: pytest + flake8 + black + isort
+- [x] C++‑CI: cmake + ctest + clang‑format + Sanitizer
+- [x] Dockerfiles (C++ & Python)
+- [x] Kubernetes‑Manifeste (Deployment, CronJob)
+- [x] Monitoring (Prometheus, Grafana)
+
+#### Monitoring-Setup
+
+Prometheus liest die Metriken der Flask-App über `/metrics` aus. Die nötigen
+Kubernetes-Ressourcen befinden sich in `k8s/prometheus.yaml` und
+`k8s/grafana.yaml`.

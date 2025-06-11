@@ -2,6 +2,9 @@
 #include <chrono>
 #include <cstddef>
 #include <unordered_map>
+#include <atomic>
+#include <mutex>
+#include <thread>
 
 #include "movegen.h"
 #include "position.h"
@@ -20,6 +23,7 @@ class Search {
    public:
     int search(Position& pos, int depth);
     int search(Position& pos, const Limits& limits);
+    int search(Position& pos, int depth, int threads);
 
    private:
     int pv_node(Position& pos, int alpha, int beta, int depth);
@@ -28,8 +32,9 @@ class Search {
     void store_tt(const std::string& key, TTEntry entry);
 
     std::unordered_map<std::string, TTEntry> tt;
+    std::mutex tt_mutex_;
     Limits limits_{};
-    std::size_t nodes_{0};
+    std::atomic<std::size_t> nodes_{0};
     std::chrono::steady_clock::time_point start_{};
     static constexpr std::size_t TT_MAX = 100000;
 

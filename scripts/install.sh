@@ -15,6 +15,7 @@ if [ -d "superengine" ]; then
   mkdir -p build
   cd build
   cmake ..
+
   # Determine the number of parallel build jobs in a cross-platform way
   JOBS=1
   if command -v nproc >/dev/null 2>&1; then
@@ -23,6 +24,13 @@ if [ -d "superengine" ]; then
     JOBS=$(sysctl -n hw.ncpu)
   fi
   cmake --build . --parallel "$JOBS"
+
+
+  cmake --build . -- -j$(nproc)
+
+  make -j$(nproc)
+
+
   cd ../..
 fi
 
