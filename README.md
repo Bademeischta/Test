@@ -114,14 +114,21 @@ C++-Engine. Sie wird beim Aufruf von `./scripts/install.sh` automatisch mit
 
 ```bash
 cmake -B build -S .
+
+cmake --build build --parallel <Anzahl-der-Jobs>
+
 cmake --build build
+
 ```
 
 Anschließend kannst du in `superengine/build` die erzeugten Testprogramme
 ausführen, z.B.:
 
+
+
 `cmake` und `make` gebaut. Anschließend kannst du in `superengine/build` die
 erzeugten Testprogramme ausführen, z.B.:
+
 
 
 ```bash

@@ -3,5 +3,5 @@ RUN apt-get update && apt-get install -y build-essential cmake git && rm -rf /va
 WORKDIR /src
 COPY superengine /src/superengine
 WORKDIR /src/superengine
-RUN cmake -B build -S . && cmake --build build -j
+RUN cmake -B build -S . && cmake --build build --parallel $(nproc)
 CMD ["./build/test_movegen"]
