@@ -26,16 +26,18 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(Catch2)
 
 find_package(Threads REQUIRED)
+find_package(ONNXRuntime REQUIRED)
 
 add_library(engine
     engine/bitboard.cpp
     engine/movegen.cpp
     engine/position.cpp
     engine/nnue_eval.cpp
-    engine/search.cpp)
+    engine/search.cpp
+    engine/onnx_policy.cpp)
 
 target_include_directories(engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/engine)
-target_link_libraries(engine PUBLIC Threads::Threads)
+target_link_libraries(engine PUBLIC Threads::Threads onnxruntime)
 
 add_executable(test_movegen tests/test_movegen.cpp)
 target_link_libraries(test_movegen PRIVATE engine Catch2::Catch2WithMain)
