@@ -98,7 +98,7 @@ bool Position::in_check(Color c) const {
     movegen::init_attack_tables();
     Bitboard king_bb = piece_bb[c][KING];
     if (!king_bb) return false;
-    int king_sq = __builtin_ctzll(king_bb);
+    int king_sq = bb::lsb_idx(king_bb);
     Color o = c == WHITE ? BLACK : WHITE;
     if (movegen::KNIGHT_ATTACKS[king_sq] & piece_bb[o][KNIGHT]) return true;
     Bitboard pawn_attacks = c == WHITE
