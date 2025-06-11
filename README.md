@@ -109,7 +109,7 @@ Per `--play-white` wählst du deine Farbe.
 Die Verzeichnisse unter `superengine/` enthalten eine experimentelle
 C++-Engine. Sie wird beim Aufruf von `./scripts/install.sh` automatisch mit
 
-`cmake` gebaut. Wenn du die Engine manuell bauen möchtest, führe im Ordner
+cmake --build build --parallel <Anzahl-der-Jobs>
 `superengine` die folgenden Befehle aus:
 
 ```bash
