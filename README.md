@@ -31,10 +31,7 @@ demonstrieren.
 
 Dies installiert alle Python-Abhängigkeiten und baut standardmäßig auch die C++
 Engine in `superengine/`. Zusätzlich wird das Projekt selbst im
-Entwicklungsmodus installiert. Das Skript prüft dabei, ob ein
-`make`-Kommando verfügbar ist. Fehlt es, versucht es automatisch die nötigen
-Build-Werkzeuge zu installieren – unter Linux per `apt`, unter Windows über
-`Chocolatey` (wird bei Bedarf ebenfalls installiert).
+Entwicklungsmodus installiert.
 Wer nur die Python-Funktionalität benötigt, kann stattdessen einfach
 
 ```bash
@@ -110,9 +107,14 @@ Per `--play-white` wählst du deine Farbe.
 ### C++-Engine nutzen
 
 Die Verzeichnisse unter `superengine/` enthalten eine experimentelle
-C++-Engine. Beim Aufruf von `./scripts/install.sh` wird sie nun
-über ein kleines `Makefile` gebaut. Das erzeugte Binary findest du
-anschließend im Ordner `superengine/make-build`.
+C++-Engine. Sie wird beim Aufruf von `./scripts/install.sh` automatisch mit
+`cmake` und `make` gebaut. Anschließend kannst du in `superengine/build` die
+erzeugten Testprogramme ausführen, z.B.:
+
+```bash
+cd superengine/build
+ctest
+```
 
 Die Datei `main.cpp` demonstriert zudem eine einfache UCI-Schnittstelle, die du
 nach einem eigenen Build als Einstieg für weitere Experimente verwenden kannst.
