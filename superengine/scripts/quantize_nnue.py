@@ -36,6 +36,8 @@ def main():
     state = torch.load(args.model, map_location="cpu")
     if "state_dict" in state:
         state = state["state_dict"]
+    elif "model_state" in state:
+        state = state["model_state"]
     data = quantize_state_dict(state, args.scale)
     with open(args.output, "wb") as fh:
         fh.write(data)

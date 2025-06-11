@@ -94,15 +94,11 @@ def main(args):
         data = torch.load(old_ckpt, map_location=Config.DEVICE)
         old_net.load_state_dict(data["model_state"])
         stats = evaluate(
-
             net,
             old_net,
             num_games=1000,
             num_simulations=Config.NUM_SIMULATIONS,
             max_moves=60,
-
-            net, old_net, num_games=1000, num_simulations=Config.NUM_SIMULATIONS
-
         )
         print("Eval stats", stats)
         if sprt(stats["wins"], stats["losses"], stats["draws"]):
