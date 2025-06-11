@@ -114,6 +114,7 @@ C++-Engine. Beim Aufruf von `./scripts/install.sh` wird sie automatisch mittels
 ```bash
 cd superengine
 cmake -B build -S .
+
 cmake --build build --parallel $(nproc)
 cd build
 ctest
@@ -162,6 +163,43 @@ python superengine/scripts/train_policy.py
 python superengine/scripts/train_nnue.py
 python superengine/scripts/quantize_nnue.py <model.pth> <output.nnue>
 ```
+
+
+cmake --build build --parallel <Anzahl-der-Jobs>
+```
+
+Danach lassen sich in `superengine/build` alle Unit-Tests per `ctest`
+starten.
+
+### Superengine Kommandos
+
+Nach erfolgreichem Build befindet sich das Binary `superengine` im
+`build`-Ordner. Es kennt zwei Modi:
+
+1. **UCI-Modus** – ohne weitere Argumente gestartet. Unterstützte Befehle:
+   - `uci` – meldet den Namen der Engine und bestätigt mit `uciok`.
+   - `isready` – gibt `readyok` zurück.
+   - `position startpos [moves ...]` – setzt die Startposition und spielt
+     optional Züge ab.
+   - `position fen <FEN>` – lädt eine Stellung aus FEN.
+   - `go` – berechnet einen Zug und antwortet mit `bestmove`.
+   - `quit` – beendet die Engine.
+
+2. **Selfplay-Modus** – zum Erzeugen von Trainingspartien:
+
+```bash
+./superengine selfplay --seed <Zahl> --net <pfad.zur.nnue> --games <Anzahl>
+```
+
+Die erzeugten PGNs landen im aktuellen Verzeichnis.
+
+Weitere Helferskripte in `superengine/scripts/`:
+
+- `prepare_data.py <pgn1> [pgn2 ...]` – extrahiert FENs und Bewertungen.
+- `train_policy.py` – trainiert das Policy/Value-Netz auf den PGNs in `games/`.
+- `train_nnue.py` – Beispiel zum Trainieren eines kleinen NNUE.
+- `quantize_nnue.py <model.pth> <output.nnue>` – wandelt PyTorch-Gewichte um.
+
 
 Alle Parameter befinden sich in `chess_ai/config.py`. Das Flag
 `FILTER_QUIET_POSITIONS` bewirkt, dass nur Stellungen gespeichert werden, in
