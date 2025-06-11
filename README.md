@@ -107,37 +107,46 @@ Per `--play-white` wählst du deine Farbe.
 ### C++-Engine nutzen
 
 Die Verzeichnisse unter `superengine/` enthalten eine experimentelle
-C++-Engine. Sie wird beim Aufruf von `./scripts/install.sh` automatisch mit
-
-`cmake` gebaut. Wenn du die Engine manuell bauen möchtest, führe im Ordner
-`superengine` die folgenden Befehle aus:
+C++-Engine. Beim Aufruf von `./scripts/install.sh` wird sie automatisch mittels
+`cmake` kompiliert. Für einen manuellen Build wechselst du in das Verzeichnis
+`superengine` und führst aus:
 
 ```bash
 cmake -B build -S .
-
 cmake --build build --parallel <Anzahl-der-Jobs>
-
-cmake --build build
-
 ```
 
-Anschließend kannst du in `superengine/build` die erzeugten Testprogramme
-ausführen, z.B.:
+Danach lassen sich in `superengine/build` alle Unit-Tests per `ctest`
+starten.
 
+### Superengine Kommandos
 
+Nach erfolgreichem Build befindet sich das Binary `superengine` im
+`build`-Ordner. Es kennt zwei Modi:
 
-`cmake` und `make` gebaut. Anschließend kannst du in `superengine/build` die
-erzeugten Testprogramme ausführen, z.B.:
+1. **UCI-Modus** – ohne weitere Argumente gestartet. Unterstützte Befehle:
+   - `uci` – meldet den Namen der Engine und bestätigt mit `uciok`.
+   - `isready` – gibt `readyok` zurück.
+   - `position startpos [moves ...]` – setzt die Startposition und spielt
+     optional Züge ab.
+   - `position fen <FEN>` – lädt eine Stellung aus FEN.
+   - `go` – berechnet einen Zug und antwortet mit `bestmove`.
+   - `quit` – beendet die Engine.
 
-
+2. **Selfplay-Modus** – zum Erzeugen von Trainingspartien:
 
 ```bash
-cd superengine/build
-ctest
+./superengine selfplay --seed <Zahl> --net <pfad.zur.nnue> --games <Anzahl>
 ```
 
-Die Datei `main.cpp` demonstriert zudem eine einfache UCI-Schnittstelle, die du
-nach einem eigenen Build als Einstieg für weitere Experimente verwenden kannst.
+Die erzeugten PGNs landen im aktuellen Verzeichnis.
+
+Weitere Helferskripte in `superengine/scripts/`:
+
+- `prepare_data.py <pgn1> [pgn2 ...]` – extrahiert FENs und Bewertungen.
+- `train_policy.py` – trainiert das Policy/Value-Netz auf den PGNs in `games/`.
+- `train_nnue.py` – Beispiel zum Trainieren eines kleinen NNUE.
+- `quantize_nnue.py <model.pth> <output.nnue>` – wandelt PyTorch-Gewichte um.
 
 Alle Parameter befinden sich in `chess_ai/config.py`. Das Flag
 `FILTER_QUIET_POSITIONS` bewirkt, dass nur Stellungen gespeichert werden, in
