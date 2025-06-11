@@ -188,44 +188,42 @@ Repository verfolgen kannst.
 
 ### 1. C++‑Engine (superengine)
 
-#### 1.1 Move‑Generation & Legalität
-
-- [x] Sliding‑Moves (Bishop, Rook, Queen) implementieren
-- [x] `Position::in_check(Color)` komplettieren
-- [x] En‑Passant‑Logik ergänzen
-- [x] King‑Moves und Rochade umsetzen
-- [x] `generate_all_pseudo` und `generate_legal_moves` vereinen -> `generate_moves`
-
-#### 1.2 Suchkern (Alpha‑Beta, Quiescence, TT, LMR, Null‑Move)
-
-- [x] Transposition Table implementieren
-- [x] Quiescence Search einbauen
-- [x] Negamax/PVS mit LMR und Null‑Move
-- [x] Search‑Entrypoint samt Zeitmanagement
-- [x] Unit‑Tests (Perft, Mate‑in‑1)
-- [x] Move‑Ordering‑Heuristiken (MVV/LVA, Killer, History)
-
-#### 1.3 NNUE‑Integration
-
- - [x] `extract_features` (Half‑KP) implementieren
- - [x] Vorwärtsdurchlauf (Eval) fertigstellen
- - [x] Python‑Tools zum Trainieren und Quantisieren
- - [x] Catch2‑Tests für geladene Netze
-
-#### 1.4 Tests & CI
-
-- [x] Perft‑Tests (Depth 1–5)
- - [x] clang‑format & Sanitizer in der CI
- - [x] Coverage‑Reporting (optional)
+- [x] Bitboards & FEN‑Parser
+- [x] Pawn‑Moves
+- [x] Knight‑Moves
+- [ ] Sliding‑Moves (Rook, Bishop, Queen)
+- [ ] King‑Moves + Castling
+- [ ] En Passant
+- [ ] Legal‑Move‑Filter mit `in_check()`
+- [ ] Quiescence‑Search
+- [ ] Alpha‑Beta / PVS Search
+- [ ] Transposition Table (TT)
+- [ ] Late‑Move‑Reductions (LMR)
+- [ ] Null‑Move Pruning
+- [ ] Multi‑Threading (Lazy SMP / Shared TT)
+- [ ] NNUE‑Feature‑Extraction
+- [ ] NNUE‑Forward (Eval)
+- [ ] Python‑Script zum Trainieren/Quantisieren von .nnue
+- [ ] Perft‑Tests (Depth 1–5)
+- [ ] clang‑format / Sanitizer / strikte Flags
 
 ### 2. Python‑Komponente (chess_ai)
 
- - [x] TensorBoard/W&B Logging integrieren
-- [x] LMDB‑ReplayBuffer für große Datensätze
- - [x] Linting (flake8/black/isort) in der CI
+- [x] State‑Encoding (18×8×8)
+- [x] `is_quiet_move()`
+- [x] ActionIndex (64×64×5)
+- [x] Policy/Value‑Net (ResNetPV)
+- [x] MCTS mit UCT, VirtualLoss, Policy‑Guidance
+- [x] ReplayBuffer & Trainer
+- [x] Self‑Play & Evaluation
+- [ ] TensorBoard / W&B Logging
+- [ ] LMDB/HDF5‑ReplayBuffer für große Datensätze
+- [ ] pytest‑CI + Lint/Format (flake8, black, isort)
 
 ### 3. CI/CD & Deployment
 
- - [x] Dockerfiles für C++‑ und Python‑Teil
- - [x] Kubernetes‑Manifeste (Deployment, CronJob)
- - [x] Monitoring und Health‑Checks
+- [ ] Python‑CI: pytest + flake8 + black + isort
+- [ ] C++‑CI: cmake + ctest + clang‑format + Sanitizer
+- [ ] Dockerfiles (C++ & Python)
+- [ ] Kubernetes‑Manifeste (Deployment, CronJob)
+- [ ] Monitoring (Prometheus, Grafana)
