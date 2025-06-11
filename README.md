@@ -228,4 +228,10 @@ Repository verfolgen kannst.
 - [x] C++‑CI: cmake + ctest + clang‑format + Sanitizer
 - [x] Dockerfiles (C++ & Python)
 - [x] Kubernetes‑Manifeste (Deployment, CronJob)
-- [ ] Monitoring (Prometheus, Grafana)
+- [x] Monitoring (Prometheus, Grafana)
+
+#### Monitoring-Setup
+
+Prometheus liest die Metriken der Flask-App über `/metrics` aus. Die nötigen
+Kubernetes-Ressourcen befinden sich in `k8s/prometheus.yaml` und
+`k8s/grafana.yaml`.

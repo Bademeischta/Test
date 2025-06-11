@@ -1,9 +1,16 @@
 import numpy as np
 
+from prometheus_client import Counter
+
 from .game_environment import GameEnvironment
 from .mcts import MCTS
 from .config import Config
 from .action_index import ACTION_SIZE, index_to_move
+
+# Metric to count completed self-play games
+self_play_games_total = Counter(
+    "self_play_games_total", "Number of self-play games generated"
+)
 
 
 def run_self_play(network, num_simulations: int = Config.NUM_SIMULATIONS):
@@ -38,6 +45,7 @@ def run_self_play(network, num_simulations: int = Config.NUM_SIMULATIONS):
             for s, p, player in trajectory:
                 z = reward if player == current_player else -reward
                 yield s, p, z
+            self_play_games_total.inc()
             break
         current_player *= -1
 
