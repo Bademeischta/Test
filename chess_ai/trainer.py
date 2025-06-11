@@ -1,9 +1,9 @@
 """Training utilities for the chess network."""
 
-
 import torch
 from torch.utils.data import DataLoader, TensorDataset
 from torch.utils.tensorboard import SummaryWriter
+from torch.optim.lr_scheduler import CosineAnnealingLR
 import wandb
 
 from .config import Config
@@ -41,10 +41,17 @@ class Trainer:
         policies = torch.tensor(policies, dtype=torch.float32, device=Config.DEVICE)
         values = torch.tensor(values, dtype=torch.float32, device=Config.DEVICE)
         dataset = TensorDataset(states, policies, values)
-        loader = DataLoader(dataset, batch_size=self.batch_size, shuffle=True)
+        loader = DataLoader(
+            dataset,
+            batch_size=self.batch_size,
+            shuffle=True,
+            num_workers=4,
+            pin_memory=True,
+        )
+        scheduler = CosineAnnealingLR(self.optimizer, T_max=len(loader) * self.epochs)
         for epoch in range(self.epochs):
             epoch_loss = 0.0
-            for s, p_target, v_target in loader:
+            for batch_idx, (s, p_target, v_target) in enumerate(loader):
                 s = s.to(Config.DEVICE)
                 p_target = p_target.to(Config.DEVICE)
                 v_target = v_target.to(Config.DEVICE)
@@ -56,7 +63,10 @@ class Trainer:
                 loss.backward()
                 torch.nn.utils.clip_grad_norm_(self.network.parameters(), 5.0)
                 self.optimizer.step()
+                scheduler.step()
                 epoch_loss += loss.item()
+                global_step = epoch * len(loader) + batch_idx
+                self.writer.add_scalar("Loss/train", loss.item(), global_step)
             avg_loss = epoch_loss / len(loader)
             print(f"Epoch {epoch + 1}/{self.epochs} - loss {avg_loss:.4f}")
             self.writer.add_scalar("loss", avg_loss, epoch)
