@@ -15,7 +15,11 @@ if [ -d "superengine" ]; then
   mkdir -p build
   cd build
   cmake ..
+
+  cmake --build . -- -j$(nproc)
+
   make -j$(nproc)
+
   cd ../..
 fi
 
