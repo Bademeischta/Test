@@ -12,6 +12,7 @@ dependencies = [
     "numpy",
     "lmdb",
     "prometheus_client",
+    "tqdm",
 ]
 
 

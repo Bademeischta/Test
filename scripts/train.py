@@ -75,14 +75,18 @@ def main(args):
     trainer.train()
 
     new_ckpt = manager.save(net, optimizer, "latest")
-    subprocess.run(
-        [
-            "python",
-            "superengine/scripts/quantize_nnue.py",
-            new_ckpt,
-            f"superengine/nets/iter_latest.nnue",
-        ]
-    )
+    try:
+        subprocess.run(
+            [
+                "python",
+                "superengine/scripts/quantize_nnue.py",
+                new_ckpt,
+                "superengine/nets/iter_latest.nnue",
+            ],
+            check=True,
+        )
+    except subprocess.CalledProcessError as exc:
+        print(f"Quantization failed: {exc}")
 
     if old_ckpt:
         old_net = PolicyValueNet(

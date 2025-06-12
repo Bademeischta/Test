@@ -5,6 +5,7 @@ from torch.utils.data import DataLoader, TensorDataset
 from torch.utils.tensorboard import SummaryWriter
 from torch.optim.lr_scheduler import CosineAnnealingLR
 import wandb
+from tqdm.auto import tqdm
 
 from .config import Config
 
@@ -37,9 +38,9 @@ class Trainer:
         if len(self.buffer) < self.batch_size:
             return
         states, policies, values = self.buffer.sample(self.batch_size)
-        states = torch.tensor(states, dtype=torch.float32, device=Config.DEVICE)
-        policies = torch.tensor(policies, dtype=torch.float32, device=Config.DEVICE)
-        values = torch.tensor(values, dtype=torch.float32, device=Config.DEVICE)
+        states = torch.tensor(states, dtype=torch.float32)
+        policies = torch.tensor(policies, dtype=torch.float32)
+        values = torch.tensor(values, dtype=torch.float32)
         dataset = TensorDataset(states, policies, values)
         loader = DataLoader(
             dataset,
@@ -51,10 +52,11 @@ class Trainer:
         scheduler = CosineAnnealingLR(self.optimizer, T_max=len(loader) * self.epochs)
         for epoch in range(self.epochs):
             epoch_loss = 0.0
-            for batch_idx, (s, p_target, v_target) in enumerate(loader):
-                s = s.to(Config.DEVICE)
-                p_target = p_target.to(Config.DEVICE)
-                v_target = v_target.to(Config.DEVICE)
+            prog_bar = tqdm(loader, desc=f"Epoch {epoch + 1}/{self.epochs}", unit="batch")
+            for batch_idx, (s, p_target, v_target) in enumerate(prog_bar):
+                s = s.to(Config.DEVICE, non_blocking=True)
+                p_target = p_target.to(Config.DEVICE, non_blocking=True)
+                v_target = v_target.to(Config.DEVICE, non_blocking=True)
                 log_p, v = self.network(s)
                 loss_policy = -(p_target * log_p).sum(dim=1).mean()
                 loss_value = torch.mean((v.view(-1) - v_target) ** 2)
@@ -67,6 +69,7 @@ class Trainer:
                 epoch_loss += loss.item()
                 global_step = epoch * len(loader) + batch_idx
                 self.writer.add_scalar("Loss/train", loss.item(), global_step)
+                prog_bar.set_postfix(loss=loss.item())
             avg_loss = epoch_loss / len(loader)
             print(f"Epoch {epoch + 1}/{self.epochs} - loss {avg_loss:.4f}")
             self.writer.add_scalar("loss", avg_loss, epoch)
