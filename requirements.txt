@@ -10,3 +10,4 @@ flake8
 isort
 coverage
 prometheus_client
+tqdm
