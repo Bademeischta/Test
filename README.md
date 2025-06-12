@@ -166,9 +166,6 @@ python superengine/scripts/prepare_data.py <pgn1> [pgn2 ...]
 python superengine/scripts/train_policy.py
 python superengine/scripts/train_nnue.py
 python superengine/scripts/quantize_nnue.py <model.pth> <output.nnue>
-```
-
-
 cmake --build build --parallel <Anzahl-der-Jobs>
 ```
 
