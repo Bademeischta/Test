@@ -26,11 +26,6 @@ if [ -d "superengine" ]; then
   cmake --build . --parallel "$JOBS"
 
 
-  cmake --build . -- -j$(nproc)
-
-  make -j$(nproc)
-
-
   cd ../..
 fi
 
