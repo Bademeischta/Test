@@ -14,12 +14,7 @@ if [ -d "superengine" ]; then
   cd superengine
   mkdir -p build
   cd build
-  if [ -n "$ONNXRuntime_DIR" ]; then
-    echo "Using ONNXRuntime from $ONNXRuntime_DIR"
-    cmake .. -DONNXRuntime_DIR="$ONNXRuntime_DIR"
-  else
-    cmake ..
-  fi
+  cmake ..
 
   # Determine the number of parallel build jobs in a cross-platform way
   JOBS=1
