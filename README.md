@@ -120,9 +120,13 @@ Per `--play-white` wählst du deine Farbe.
 ### C++-Engine nutzen
 
 Die Verzeichnisse unter `superengine/` enthalten eine experimentelle
-C++-Engine. Beim Aufruf von `./scripts/install.sh` wird sie automatisch mittels
-`cmake` kompiliert. Für einen manuellen Build wechselst du in das Verzeichnis
-`superengine` und führst aus:
+C++-Engine. Zum Bauen wird das native [ONNX Runtime](https://onnxruntime.ai)
+benötigt. Lade dazu das vorgefertigte C++ SDK herunter oder kompiliere es aus
+den Quellen und setze die Umgebungsvariable `ONNXRuntime_DIR` auf den Ordner,
+der die Datei `onnxruntimeConfig.cmake` enthält. Anschließend wird beim Aufruf
+von `./scripts/install.sh` die Engine automatisch mittels `cmake` kompiliert.
+Für einen manuellen Build wechselst du in das Verzeichnis `superengine` und
+führst aus:
 
 ```bash
 cd superengine
