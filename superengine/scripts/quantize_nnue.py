@@ -1,7 +1,11 @@
 import argparse
 import numpy as np
 import torch
-from tqdm.auto import tqdm
+try:  # allow running even if tqdm isn't installed
+    from tqdm.auto import tqdm  # type: ignore
+except ModuleNotFoundError:  # pragma: no cover - optional dep
+    def tqdm(iterable=None, **kwargs):
+        return iterable
 
 
 def _get_param(state_dict: dict, *names: str):

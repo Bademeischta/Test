@@ -75,10 +75,11 @@ def main(args):
     trainer.train()
 
     new_ckpt = manager.save(net, optimizer, "latest")
+    import sys
     try:
         subprocess.run(
             [
-                "python",
+                sys.executable,
                 "superengine/scripts/quantize_nnue.py",
                 new_ckpt,
                 "superengine/nets/iter_latest.nnue",
