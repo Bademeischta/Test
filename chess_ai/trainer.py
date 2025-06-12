@@ -37,9 +37,9 @@ class Trainer:
         if len(self.buffer) < self.batch_size:
             return
         states, policies, values = self.buffer.sample(self.batch_size)
-        states = torch.tensor(states, dtype=torch.float32, device=Config.DEVICE)
-        policies = torch.tensor(policies, dtype=torch.float32, device=Config.DEVICE)
-        values = torch.tensor(values, dtype=torch.float32, device=Config.DEVICE)
+        states = torch.tensor(states, dtype=torch.float32)
+        policies = torch.tensor(policies, dtype=torch.float32)
+        values = torch.tensor(values, dtype=torch.float32)
         dataset = TensorDataset(states, policies, values)
         loader = DataLoader(
             dataset,
@@ -52,9 +52,9 @@ class Trainer:
         for epoch in range(self.epochs):
             epoch_loss = 0.0
             for batch_idx, (s, p_target, v_target) in enumerate(loader):
-                s = s.to(Config.DEVICE)
-                p_target = p_target.to(Config.DEVICE)
-                v_target = v_target.to(Config.DEVICE)
+                s = s.to(Config.DEVICE, non_blocking=True)
+                p_target = p_target.to(Config.DEVICE, non_blocking=True)
+                v_target = v_target.to(Config.DEVICE, non_blocking=True)
                 log_p, v = self.network(s)
                 loss_policy = -(p_target * log_p).sum(dim=1).mean()
                 loss_value = torch.mean((v.view(-1) - v_target) ** 2)

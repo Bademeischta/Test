@@ -3,27 +3,61 @@ import numpy as np
 import torch
 
 
+def _get_param(state_dict: dict, *names: str):
+    """Return the first matching parameter tensor from ``state_dict``."""
+    for name in names:
+        if name in state_dict:
+            return state_dict[name]
+    raise KeyError(f"None of the parameter names {names} found in state_dict")
+
+
 def quantize_state_dict(state_dict: dict, scale: int = 1000) -> bytes:
-    w1 = state_dict["l1.weight"].t().numpy()
-    w2 = state_dict["l2.weight"].t().numpy()
-    b2 = state_dict["l2.bias"].numpy()
-    w3 = state_dict["out.weight"].squeeze(0).numpy()
+    """Convert model weights to a simple NNUE format.
+
+    This helper is tolerant to different parameter names used by various
+    training scripts. It looks for both the current ``fc_*`` names and older
+    ``l*``/``out`` style names.
+    """
+
+    print("Ver\xC3\xBCgbare Schl\xC3\xBCssel im state_dict:", list(state_dict.keys()))
+
+    print("Exportiere fc_value1.weight...")
+    w1 = _get_param(state_dict, "fc_value1.weight", "l1.weight").t().numpy()
+    print("Exportiere fc_value1.bias...")
+    b1 = _get_param(state_dict, "fc_value1.bias", "l1.bias").numpy()
+    print("Exportiere fc_value2.weight...")
+    w2 = _get_param(state_dict, "fc_value2.weight", "l2.weight").t().numpy()
+    print("Exportiere fc_value2.bias...")
+    b2 = _get_param(state_dict, "fc_value2.bias", "l2.bias").numpy()
+    print("Exportiere fc_policy.weight...")
+    w3_raw = _get_param(state_dict, "fc_policy.weight", "out.weight")
+    w3 = w3_raw.squeeze(0).numpy() if len(w3_raw.shape) == 3 else w3_raw.numpy()
+    print("Exportiere fc_policy.bias...")
+    b3 = _get_param(state_dict, "fc_policy.bias", "out.bias").numpy()
 
     def to_int16(arr):
         arr = np.round(arr * scale)
         return np.clip(arr, -32768, 32767).astype(np.int16)
 
+    print("Quantisiere...")
     w1_q = to_int16(w1)
+    b1_q = to_int16(b1)
     w2_q = to_int16(w2)
     b2_q = to_int16(b2)
     w3_q = to_int16(w3)
+    b3_q = to_int16(b3)
 
-    return b"".join([
-        w1_q.tobytes(),
-        w2_q.tobytes(),
-        b2_q.tobytes(),
-        w3_q.tobytes(),
-    ])
+    print("Packe Daten...")
+    return b"".join(
+        [
+            w1_q.tobytes(),
+            b1_q.tobytes(),
+            w2_q.tobytes(),
+            b2_q.tobytes(),
+            w3_q.tobytes(),
+            b3_q.tobytes(),
+        ]
+    )
 
 
 def main():
