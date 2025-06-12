@@ -119,12 +119,15 @@ führst aus:
 cd superengine
 cmake -B build -S .
 
-cmake --build build --parallel $(nproc)
+cmake --build build --config Debug --parallel $(nproc)
 cd build
-ctest
+ctest -C Debug
 ```
 
-Damit ist der Build abgeschlossen und die Unit-Tests werden ausgeführt.
+Damit ist der Build abgeschlossen und die Unit-Tests werden ausgeführt. Bei
+Multi-Config-Generatoren wie Visual Studio muss dabei die Konfiguration
+angegeben werden. Obiges Beispiel nutzt `Debug`; bei einem Release-Build
+verwendest du entsprechend `--config Release` und `ctest -C Release`.
 
 ### Superengine Kommandos
 
@@ -169,11 +172,12 @@ python superengine/scripts/quantize_nnue.py <model.pth> <output.nnue>
 ```
 
 
-cmake --build build --parallel <Anzahl-der-Jobs>
+cmake --build build --config Debug --parallel <Anzahl-der-Jobs>
 ```
 
-Danach lassen sich in `superengine/build` alle Unit-Tests per `ctest`
-starten.
+Danach lassen sich in `superengine/build` alle Unit-Tests per
+`ctest -C Debug` starten. Wird die Engine im Release-Modus gebaut,
+ersetzt du `Debug` entsprechend durch `Release`.
 
 ### Superengine Kommandos
 
