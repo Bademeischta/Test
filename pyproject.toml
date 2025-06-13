@@ -17,4 +17,4 @@ dependencies = [
 
 
 [tool.setuptools.packages.find]
-include = ["chess_ai*"]
+include = ["chess_ai*", "scripts*"]
