@@ -14,9 +14,7 @@ except Exception:  # pragma: no cover - optional dependency
     ORTModule = None
 import wandb
 from tqdm.auto import tqdm
-import sys
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "scripts"))
-from play_vs_ai import evaluate_against_previous
+from scripts.play_vs_ai import evaluate_against_previous
 
 torch.backends.cudnn.benchmark = True
 
