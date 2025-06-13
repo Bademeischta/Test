@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.utils.checkpoint import checkpoint_sequential
 
 
 class ResidualBlock(nn.Module):
@@ -61,8 +62,7 @@ class PolicyValueNet(nn.Module):
 
     def forward(self, x):
         x = F.relu(self.bn0(self.conv0(x)))
-        for block in self.res_blocks:
-            x = block(x)
+        x = checkpoint_sequential(nn.Sequential(*self.res_blocks), 2, x)
         p = F.relu(self.bn_policy(self.conv_policy(x)))
         p = p.view(p.size(0), -1)
         p = F.log_softmax(self.fc_policy(p), dim=1)

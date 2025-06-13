@@ -3,6 +3,7 @@
 import argparse
 import chess
 import torch
+import os
 
 from chess_ai.config import Config
 from chess_ai.game_environment import GameEnvironment
@@ -10,6 +11,7 @@ from chess_ai.policy_value_net import PolicyValueNet
 from chess_ai.action_index import ACTION_SIZE, index_to_move
 from chess_ai.mcts import MCTS
 from chess_ai.network_manager import NetworkManager
+from chess_ai.evaluation import evaluate
 
 
 def load_network(manager: NetworkManager) -> PolicyValueNet:
@@ -26,6 +28,44 @@ def load_network(manager: NetworkManager) -> PolicyValueNet:
     net.load_state_dict(data["model_state"])
     net.eval()
     return net
+
+
+def evaluate_against_previous(prev_ckpt: str, games: int = 100, simulations: int = 50):
+    """Evaluate current latest network against a previous checkpoint."""
+    manager = NetworkManager()
+    latest_ckpt = manager.latest_checkpoint()
+    if not latest_ckpt or not os.path.exists(prev_ckpt):
+        return 0.0, 0.0
+
+    new_net = PolicyValueNet(
+        GameEnvironment.NUM_CHANNELS,
+        ACTION_SIZE,
+        num_blocks=Config.NUM_RES_BLOCKS,
+        filters=Config.NUM_FILTERS,
+    ).to(Config.DEVICE)
+    data = torch.load(latest_ckpt, map_location=Config.DEVICE)
+    new_net.load_state_dict(data["model_state"])
+
+    old_net = PolicyValueNet(
+        GameEnvironment.NUM_CHANNELS,
+        ACTION_SIZE,
+        num_blocks=Config.NUM_RES_BLOCKS,
+        filters=Config.NUM_FILTERS,
+    ).to(Config.DEVICE)
+    data_old = torch.load(prev_ckpt, map_location=Config.DEVICE)
+    old_net.load_state_dict(data_old["model_state"])
+
+    stats = evaluate(
+        new_net,
+        old_net,
+        num_games=games,
+        num_simulations=simulations,
+        max_moves=60,
+    )
+    total = stats["wins"] + stats["losses"] + stats["draws"]
+    win_rate = stats["wins"] / total if total else 0.0
+    elo_delta = (stats["wins"] - stats["losses"]) * 5.0
+    return win_rate, elo_delta
 
 
 def main(args):
