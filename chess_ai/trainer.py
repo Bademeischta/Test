@@ -66,8 +66,10 @@ class Trainer:
         log_dir: str = Config.LOG_DIR,
         use_wandb: bool = False,
     ):
+        # 1) Auf GPU schieben …
         self.network = network.to(Config.DEVICE)
-        self.network = torch.compile(self.network)
+        # 2) TorchDynamo ohne Triton, mit aot_eager-Fallback:
+        self.network = torch.compile(self.network, backend="aot_eager")
         if ORTModule is not None:
             self.network = ORTModule(self.network)
         # Gradient checkpointing handled inside the network's forward
