@@ -1,4 +1,7 @@
 import argparse
+import sys
+import time
+
 import numpy as np
 import torch
 
@@ -19,27 +22,30 @@ def quantize_state_dict(state_dict: dict, scale: int = 1000) -> bytes:
     ``l*``/``out`` style names.
     """
 
-    print("Ver\xC3\xBCgbare Schl\xC3\xBCssel im state_dict:", list(state_dict.keys()))
+    t0 = time.time()
 
-    print("Exportiere fc_value1.weight...")
+    keys = list(state_dict.keys())
+    print(f"{len(keys)} Keys insgesamt, Beispiel: {keys[:10]}", flush=True)
+
+    print("Exportiere fc_value1.weight...", flush=True)
     w1 = _get_param(state_dict, "fc_value1.weight", "l1.weight").t().numpy()
-    print("Exportiere fc_value1.bias...")
+    print("Exportiere fc_value1.bias...", flush=True)
     b1 = _get_param(state_dict, "fc_value1.bias", "l1.bias").numpy()
-    print("Exportiere fc_value2.weight...")
+    print("Exportiere fc_value2.weight...", flush=True)
     w2 = _get_param(state_dict, "fc_value2.weight", "l2.weight").t().numpy()
-    print("Exportiere fc_value2.bias...")
+    print("Exportiere fc_value2.bias...", flush=True)
     b2 = _get_param(state_dict, "fc_value2.bias", "l2.bias").numpy()
-    print("Exportiere fc_policy.weight...")
+    print("Exportiere fc_policy.weight...", flush=True)
     w3_raw = _get_param(state_dict, "fc_policy.weight", "out.weight")
     w3 = w3_raw.squeeze(0).numpy() if len(w3_raw.shape) == 3 else w3_raw.numpy()
-    print("Exportiere fc_policy.bias...")
+    print("Exportiere fc_policy.bias...", flush=True)
     b3 = _get_param(state_dict, "fc_policy.bias", "out.bias").numpy()
 
     def to_int16(arr):
         arr = np.round(arr * scale)
         return np.clip(arr, -32768, 32767).astype(np.int16)
 
-    print("Quantisiere...")
+    print("Quantisiere...", flush=True)
     w1_q = to_int16(w1)
     b1_q = to_int16(b1)
     w2_q = to_int16(w2)
@@ -57,8 +63,12 @@ def quantize_state_dict(state_dict: dict, scale: int = 1000) -> bytes:
     ]
     packed = bytearray()
     for idx, part in enumerate(parts, 1):
-        print(f"Packe Daten Chunk {idx}/{len(parts)}")
+        print(f"Packe Daten Chunk {idx}/{len(parts)}", flush=True)
         packed.extend(part)
+        sys.stdout.flush()
+
+    print("\u2705 Quantisierung und Packen komplett abgeschlossen", flush=True)
+    print(f"Quantisierung hat {time.time() - t0:.1f}s gedauert", flush=True)
     return bytes(packed)
 
 
