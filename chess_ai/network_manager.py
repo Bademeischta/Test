@@ -47,9 +47,21 @@ class NetworkManager:
 
     def load(self, path, model, optimizer=None):
         """Load a checkpoint into ``model`` and optionally ``optimizer``."""
-        checkpoint = torch.load(path, map_location=Config.DEVICE)
+        try:
+            # PyTorch 2.6+: explizit weights_only=False, damit auch Optimizer-States etc. geladen werden
+            checkpoint = torch.load(
+                path,
+                map_location=Config.DEVICE,
+                weights_only=False
+            )
+        except TypeError:
+            # Fallback für ältere PyTorch-Versionen ohne weights_only-Parameter
+            checkpoint = torch.load(
+                path,
+                map_location=Config.DEVICE
+            )
         base_model = _unwrap(model)
-        state_dict = _fix_legacy_state_dict(checkpoint["model_state"])
+        state_dict = _fix_legacy_state_dict(checkpoint.get("model_state", {}))
         base_model.load_state_dict(state_dict)
         if optimizer and "optim_state" in checkpoint:
             optimizer.load_state_dict(checkpoint["optim_state"])
