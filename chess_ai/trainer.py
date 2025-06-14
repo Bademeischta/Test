@@ -16,18 +16,25 @@ import wandb
 from tqdm.auto import tqdm
 from scripts.play_vs_ai import evaluate_against_previous
 
-torch.backends.cudnn.benchmark = True
-
 checkpoint_dir = "checkpoints"
 os.makedirs(checkpoint_dir, exist_ok=True)
 
 
+def _unwrap(model):
+    if hasattr(model, "_orig_mod"):
+        return model._orig_mod
+    if hasattr(model, "_original_module"):
+        return model._original_module
+    return model
+
+
 def save_checkpoint(epoch, model, optimizer, scaler):
     path = os.path.join(checkpoint_dir, f"ckpt_epoch{epoch}.pt")
+    base_model = _unwrap(model)
     torch.save(
         {
             "epoch": epoch,
-            "model_state": model.state_dict(),
+            "model_state": base_model.state_dict(),
             "opt_state": optimizer.state_dict(),
             "scaler_state": scaler.state_dict(),
         },
@@ -38,7 +45,8 @@ def save_checkpoint(epoch, model, optimizer, scaler):
 
 def load_checkpoint(path, model, optimizer, scaler):
     ckpt = torch.load(path, map_location=Config.DEVICE)
-    model.load_state_dict(ckpt["model_state"])
+    base_model = _unwrap(model)
+    base_model.load_state_dict(ckpt["model_state"])
     optimizer.load_state_dict(ckpt["opt_state"])
     scaler.load_state_dict(ckpt["scaler_state"])
     print(f"⏺️ Checkpoint geladen: {path}")
