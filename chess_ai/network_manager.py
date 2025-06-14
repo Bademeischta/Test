@@ -15,6 +15,13 @@ def _unwrap(model):
     return model
 
 
+def _fix_legacy_state_dict(state_dict: dict, prefix: str = "_orig_mod.") -> dict:
+    """Remove wrapper prefixes from old checkpoints."""
+    if any(k.startswith(prefix) for k in state_dict):
+        return {k[len(prefix) :] if k.startswith(prefix) else k: v for k, v in state_dict.items()}
+    return state_dict
+
+
 class NetworkManager:
     def __init__(self, checkpoint_dir: str = Config.CHECKPOINT_DIR):
         self.checkpoint_dir = checkpoint_dir
@@ -42,7 +49,8 @@ class NetworkManager:
         """Load a checkpoint into ``model`` and optionally ``optimizer``."""
         checkpoint = torch.load(path, map_location=Config.DEVICE)
         base_model = _unwrap(model)
-        base_model.load_state_dict(checkpoint["model_state"])
+        state_dict = _fix_legacy_state_dict(checkpoint["model_state"])
+        base_model.load_state_dict(state_dict)
         if optimizer and "optim_state" in checkpoint:
             optimizer.load_state_dict(checkpoint["optim_state"])
         return checkpoint
