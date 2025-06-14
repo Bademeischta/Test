@@ -48,9 +48,7 @@ class PolicyValueNet(nn.Module):
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
-                nn.init.kaiming_normal_(
-                    m.weight, mode="fan_out", nonlinearity="relu"
-                )
+                nn.init.kaiming_normal_(m.weight, mode="fan_out", nonlinearity="relu")
                 if m.bias is not None:
                     nn.init.constant_(m.bias, 0)
             elif isinstance(m, nn.Linear):
@@ -62,7 +60,9 @@ class PolicyValueNet(nn.Module):
 
     def forward(self, x):
         x = F.relu(self.bn0(self.conv0(x)))
-        x = checkpoint_sequential(nn.Sequential(*self.res_blocks), 2, x)
+        x = checkpoint_sequential(
+            nn.Sequential(*self.res_blocks), 2, x, use_reentrant=False
+        )
         p = F.relu(self.bn_policy(self.conv_policy(x)))
         p = p.view(p.size(0), -1)
         p = F.log_softmax(self.fc_policy(p), dim=1)
