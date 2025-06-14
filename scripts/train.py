@@ -3,33 +3,8 @@
 
 import os
 import sys
-import time
 import subprocess
 
-
-def run_brief_training(games, epochs, sims):
-    """Führt einen kurzen Trainingsdurchlauf im Quiet-Modus aus und gibt die
-    Laufzeit in Sekunden zurück."""
-
-    cmd = [
-        sys.executable,
-        "scripts/train.py",
-        "--games",
-        str(games),
-        "--epochs",
-        str(epochs),
-        "--simulations",
-        str(sims),
-        "--quiet",
-    ]
-    print(
-        f"\n→ Starte Kurzlauf: games={games}, epochs={epochs}, simulations={sims}"
-    )
-    t0 = time.time()
-    subprocess.run(cmd, check=True)
-    duration = time.time() - t0
-    print(f"← Kurzlauf abgeschlossen in {duration:.1f}s\n")
-    return duration
 
 import argparse
 import torch
@@ -175,23 +150,6 @@ if __name__ == "__main__":
         default=Config.NUM_SIMULATIONS,
         help="MCTS simulations",
     )
-    parser.add_argument("--quiet", action="store_true", help="Suppress bench output")
     args = parser.parse_args()
 
-    if args.quiet:
-        main(args)
-    else:
-        baseline_time = run_brief_training(games=10, epochs=1, sims=10)
-
-        # --- HIER BEGINNEN DIE OPTIMIERUNGEN ---
-        # (Sektionen A–J ausführen)
-
-        optimized_time = run_brief_training(games=10, epochs=1, sims=10)
-
-        speedup = (
-            baseline_time / optimized_time if optimized_time > 0 else float("inf")
-        )
-        print("\n=== KURZ-BENCHMARK-ERGEBNISSE ===")
-        print(f"Baseline-Dauer:       {baseline_time:.1f}s")
-        print(f"Optimierte Dauer:     {optimized_time:.1f}s")
-        print(f"Erreichter Speed-Up:  {speedup:.2f}×")
+    main(args)
