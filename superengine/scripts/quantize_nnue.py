@@ -1,7 +1,6 @@
 import argparse
 import numpy as np
 import torch
-from tqdm.auto import tqdm
 
 
 def _get_param(state_dict: dict, *names: str):
@@ -57,7 +56,8 @@ def quantize_state_dict(state_dict: dict, scale: int = 1000) -> bytes:
         b3_q.tobytes(),
     ]
     packed = bytearray()
-    for part in tqdm(parts, desc="Packe Daten", unit="chunk"):
+    for idx, part in enumerate(parts, 1):
+        print(f"Packe Daten Chunk {idx}/{len(parts)}")
         packed.extend(part)
     return bytes(packed)
 
