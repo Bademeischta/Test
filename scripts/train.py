@@ -16,7 +16,7 @@ from chess_ai.replay_buffer import ReplayBuffer
 from chess_ai.self_play import run_self_play
 from chess_ai.trainer import Trainer
 from chess_ai.action_index import ACTION_SIZE
-from chess_ai.network_manager import NetworkManager
+from chess_ai.network_manager import NetworkManager, _unwrap
 from chess_ai.evaluation import evaluate
 
 
@@ -115,10 +115,22 @@ def main(args):
             manager.load(old_ckpt, net, optimizer)
 
     os.makedirs("nets", exist_ok=True)
-    dummy_input = torch.randn(1, 18, 8, 8, device=Config.DEVICE)
-    export_model = (
-        net._original_module if hasattr(net, "_original_module") else net
+
+    # Build a fresh PolicyValueNet without checkpointing/ORTModule for export
+    export_model = PolicyValueNet(
+        GameEnvironment.NUM_CHANNELS,
+        ACTION_SIZE,
+        num_blocks=Config.NUM_RES_BLOCKS,
+        filters=Config.NUM_FILTERS,
     )
+
+    # Load the trained weights from the wrapped model
+    base = _unwrap(net)
+    export_model.load_state_dict(base.state_dict())
+
+    export_model.eval()
+    export_model.to("cpu")
+    dummy_input = torch.randn(1, 18, 8, 8, device="cpu")
 
     torch.onnx.export(
         export_model,
