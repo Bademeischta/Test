@@ -1,19 +1,22 @@
 """Training utilities for the chess network."""
 
 import os
+
+import numpy as np
 import torch
 import torch.nn as nn
+from torch.amp import GradScaler, autocast
+from torch.optim.lr_scheduler import CosineAnnealingLR
 from torch.utils.data import DataLoader, TensorDataset
 from torch.utils.tensorboard import SummaryWriter
-from torch.optim.lr_scheduler import CosineAnnealingLR
-from torch.utils.checkpoint import checkpoint_sequential
-from torch.cuda.amp import autocast, GradScaler
+
 try:
     from onnxruntime.training import ORTModule
 except Exception:  # pragma: no cover - optional dependency
     ORTModule = None
 import wandb
 from tqdm.auto import tqdm
+
 from scripts.play_vs_ai import evaluate_against_previous
 
 checkpoint_dir = "checkpoints"
@@ -52,6 +55,7 @@ def load_checkpoint(path, model, optimizer, scaler):
     print(f"⏺️ Checkpoint geladen: {path}")
     return ckpt["epoch"] + 1
 
+
 from .config import Config
 
 
@@ -89,11 +93,12 @@ class Trainer:
         if len(self.buffer) < self.batch_size:
             return
 
-        scaler = GradScaler()
+        scaler = GradScaler(device="cuda")
         accumulation_steps = 4
 
         states, policies, values = self.buffer.sample(self.batch_size)
-        states = torch.tensor(states, dtype=torch.float32)
+        states_np = np.stack(states, axis=0)
+        states = torch.from_numpy(states_np).float()
         policies = torch.tensor(policies, dtype=torch.float32)
         values = torch.tensor(values, dtype=torch.float32)
         dataset = TensorDataset(states, policies, values)
@@ -125,7 +130,7 @@ class Trainer:
                 s = s.cuda(non_blocking=True)
                 p_target = p_target.cuda(non_blocking=True)
                 v_target = v_target.cuda(non_blocking=True)
-                with autocast():
+                with autocast(device_type="cuda"):
                     log_p, v = self.network(s)
                     loss_policy = -(p_target * log_p).sum(dim=1).mean()
                     loss_value = torch.mean((v.view(-1) - v_target) ** 2)
@@ -141,7 +146,9 @@ class Trainer:
 
                 epoch_loss += loss.item() * accumulation_steps
                 global_step = epoch * len(loader) + batch_idx
-                self.writer.add_scalar("Loss/train", loss.item() * accumulation_steps, global_step)
+                self.writer.add_scalar(
+                    "Loss/train", loss.item() * accumulation_steps, global_step
+                )
                 prog_bar.set_postfix(loss=loss.item() * accumulation_steps)
 
             avg_loss = epoch_loss / len(loader)
@@ -156,5 +163,5 @@ class Trainer:
                 "nets/final_model.onnx", games=100, simulations=50
             )
             print(
-                f"\U0001F4CA Evaluation Epoche {epoch}: Win-Rate={win_rate:.2%}, ΔElo={elo_delta:.1f}"
+                f"\U0001f4ca Evaluation Epoche {epoch}: Win-Rate={win_rate:.2%}, ΔElo={elo_delta:.1f}"
             )
