@@ -60,9 +60,7 @@ def load_or_initialize_network(manager: NetworkManager):
     )
     ckpt = manager.latest_checkpoint()
     if ckpt:
-        data = torch.load(ckpt, map_location=Config.DEVICE)
-        net.load_state_dict(data["model_state"])
-        optimizer.load_state_dict(data["optim_state"])
+        manager.load(ckpt, net, optimizer)
     return net, optimizer
 
 

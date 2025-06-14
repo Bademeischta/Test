@@ -24,8 +24,7 @@ def load_network(manager: NetworkManager) -> PolicyValueNet:
     ckpt = manager.latest_checkpoint()
     if not ckpt:
         raise FileNotFoundError("No trained network found in checkpoints")
-    data = torch.load(ckpt, map_location=Config.DEVICE)
-    net.load_state_dict(data["model_state"])
+    manager.load(ckpt, net)
     net.eval()
     return net
 
@@ -43,8 +42,7 @@ def evaluate_against_previous(prev_ckpt: str, games: int = 100, simulations: int
         num_blocks=Config.NUM_RES_BLOCKS,
         filters=Config.NUM_FILTERS,
     ).to(Config.DEVICE)
-    data = torch.load(latest_ckpt, map_location=Config.DEVICE)
-    new_net.load_state_dict(data["model_state"])
+    manager.load(latest_ckpt, new_net)
 
     old_net = PolicyValueNet(
         GameEnvironment.NUM_CHANNELS,
@@ -52,8 +50,7 @@ def evaluate_against_previous(prev_ckpt: str, games: int = 100, simulations: int
         num_blocks=Config.NUM_RES_BLOCKS,
         filters=Config.NUM_FILTERS,
     ).to(Config.DEVICE)
-    data_old = torch.load(prev_ckpt, map_location=Config.DEVICE)
-    old_net.load_state_dict(data_old["model_state"])
+    manager.load(prev_ckpt, old_net)
 
     stats = evaluate(
         new_net,
