@@ -81,7 +81,7 @@ def main():
     )
     trainer.fit(Module(), loader)
     os.makedirs("../nets", exist_ok=True)
-    torch.save(trainer.model.net.state_dict(), "../nets/gpu_policy.onnx")
+    torch.save(trainer.model.net.state_dict(), "../nets/gpu_policy.pth")
 
 
 if __name__ == "__main__":

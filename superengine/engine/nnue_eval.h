@@ -1,11 +1,12 @@
 #pragma once
 #include <array>
 #include <string>
+
 #include "position.h"
 
 namespace nnue {
 
-constexpr int INPUTS  = 768;
+constexpr int INPUTS = 768;
 constexpr int HIDDEN1 = 512;
 constexpr int HIDDEN2 = 256;
 constexpr int OUTPUTS = 1;
@@ -22,4 +23,4 @@ extern Network net;
 int eval(const Position& pos);
 void load_network(const std::string& path);
 
-}
+}  // namespace nnue

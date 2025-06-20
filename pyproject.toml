@@ -10,8 +10,11 @@ dependencies = [
     "torch",
     "python-chess",
     "numpy",
+    "lmdb",
+    "prometheus_client",
+    "tqdm",
 ]
 
 
 [tool.setuptools.packages.find]
-include = ["chess_ai*"]
+include = ["chess_ai*", "scripts*"]
