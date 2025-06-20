@@ -1,0 +1,37 @@
+name: C++ CI
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake clang-format lcov
+      - name: clang-format
+        run: |
+          find superengine -name '*.cpp' -o -name '*.h' | xargs clang-format --dry-run --Werror
+
+      - name: Configure
+        run: cmake -B build -S superengine -DCMAKE_BUILD_TYPE=Debug -DENABLE_SANITIZER=ON -DENABLE_COVERAGE=ON
+
+      - name: Build
+        run: cmake --build build
+
+      - name: Run tests
+        run: |
+          cd build && ctest --output-on-failure
+
+      - name: Capture coverage
+        run: |
+          lcov --capture --directory build --output-file coverage.info
+          lcov --remove coverage.info '/usr/*' --output-file coverage.info
+          lcov --list coverage.info
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: coverage.info

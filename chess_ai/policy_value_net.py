@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.utils.checkpoint import checkpoint_sequential
 
 
 class ResidualBlock(nn.Module):
@@ -42,13 +43,12 @@ class PolicyValueNet(nn.Module):
         self.conv_value = nn.Conv2d(filters, 1, kernel_size=1)
         self.bn_value = nn.BatchNorm2d(1)
         self.fc_value1 = nn.Linear(1 * 8 * 8, 256)
+        self.dropout = nn.Dropout(p=0.3)
         self.fc_value2 = nn.Linear(256, 1)
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
-                nn.init.kaiming_normal_(
-                    m.weight, mode="fan_out", nonlinearity="relu"
-                )
+                nn.init.kaiming_normal_(m.weight, mode="fan_out", nonlinearity="relu")
                 if m.bias is not None:
                     nn.init.constant_(m.bias, 0)
             elif isinstance(m, nn.Linear):
@@ -60,13 +60,15 @@ class PolicyValueNet(nn.Module):
 
     def forward(self, x):
         x = F.relu(self.bn0(self.conv0(x)))
-        for block in self.res_blocks:
-            x = block(x)
+        x = checkpoint_sequential(
+            nn.Sequential(*self.res_blocks), 2, x, use_reentrant=False
+        )
         p = F.relu(self.bn_policy(self.conv_policy(x)))
         p = p.view(p.size(0), -1)
         p = F.log_softmax(self.fc_policy(p), dim=1)
         v = F.relu(self.bn_value(self.conv_value(x)))
         v = v.view(v.size(0), -1)
         v = F.relu(self.fc_value1(v))
+        v = self.dropout(v)
         v = torch.tanh(self.fc_value2(v))
         return p, v

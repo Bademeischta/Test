@@ -6,12 +6,24 @@ class GameEnvironment:
     """Wrapper around python-chess for board management and encoding."""
 
     NUM_CHANNELS = 18
+    PIECE_TO_IDX = {
+        chess.PAWN: 0,
+        chess.ROOK: 1,
+        chess.KNIGHT: 2,
+        chess.BISHOP: 3,
+        chess.QUEEN: 4,
+        chess.KING: 5,
+    }
 
     def __init__(self):
         self.board = chess.Board()
 
     def reset(self):
-        self.board.reset()
+        if hasattr(self.board, "reset"):
+            self.board.reset()
+        else:
+            # Fallback for older python-chess versions
+            self.board.reset_board()
         return self.get_state()
 
     def get_state(self):
@@ -55,14 +67,7 @@ class GameEnvironment:
             row = square // 8
             col = square % 8
             offset = 0 if piece.color == chess.WHITE else 6
-            piece_idx = {
-                chess.PAWN: 0,
-                chess.ROOK: 1,
-                chess.KNIGHT: 2,
-                chess.BISHOP: 3,
-                chess.QUEEN: 4,
-                chess.KING: 5,
-            }[piece.piece_type]
+            piece_idx = cls.PIECE_TO_IDX[piece.piece_type]
             planes[offset + piece_idx][row][col] = 1
         planes[12][:] = int(board.turn)
         planes[13][:] = int(board.has_kingside_castling_rights(chess.WHITE))
