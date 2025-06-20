@@ -3,7 +3,9 @@
 import argparse
 import chess
 import torch
+
 import os
+
 
 from chess_ai.config import Config
 from chess_ai.game_environment import GameEnvironment
@@ -11,7 +13,9 @@ from chess_ai.policy_value_net import PolicyValueNet
 from chess_ai.action_index import ACTION_SIZE, index_to_move
 from chess_ai.mcts import MCTS
 from chess_ai.network_manager import NetworkManager
+
 from chess_ai.evaluation import evaluate
+
 
 
 def load_network(manager: NetworkManager) -> PolicyValueNet:
@@ -24,9 +28,15 @@ def load_network(manager: NetworkManager) -> PolicyValueNet:
     ckpt = manager.latest_checkpoint()
     if not ckpt:
         raise FileNotFoundError("No trained network found in checkpoints")
+
     manager.load(ckpt, net)
+
+    data = torch.load(ckpt, map_location=Config.DEVICE)
+    net.load_state_dict(data["model_state"])
+
     net.eval()
     return net
+
 
 
 def evaluate_against_previous(prev_ckpt: str, games: int = 100, simulations: int = 50):
@@ -63,6 +73,7 @@ def evaluate_against_previous(prev_ckpt: str, games: int = 100, simulations: int
     win_rate = stats["wins"] / total if total else 0.0
     elo_delta = (stats["wins"] - stats["losses"]) * 5.0
     return win_rate, elo_delta
+
 
 
 def main(args):

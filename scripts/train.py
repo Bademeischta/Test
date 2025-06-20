@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 """Minimal training harness for the chess AI."""
 
+
 import os
 import sys
 import subprocess
+
 
 
 import argparse
@@ -16,8 +18,12 @@ from chess_ai.replay_buffer import ReplayBuffer
 from chess_ai.self_play import run_self_play
 from chess_ai.trainer import Trainer
 from chess_ai.action_index import ACTION_SIZE
+
 from chess_ai.network_manager import NetworkManager, _unwrap
 from chess_ai.evaluation import evaluate
+
+from chess_ai.network_manager import NetworkManager
+
 
 
 def load_or_initialize_network(manager: NetworkManager):
@@ -35,6 +41,7 @@ def load_or_initialize_network(manager: NetworkManager):
     )
     ckpt = manager.latest_checkpoint()
     if ckpt:
+
         manager.load(ckpt, net, optimizer)
     return net, optimizer
 
@@ -62,10 +69,21 @@ def sprt(w, l, d, elo0=-5, elo1=5, alpha=0.05, beta=0.05):
 def main(args):
     manager = NetworkManager()
     old_ckpt = manager.latest_checkpoint()
+
+        data = torch.load(ckpt, map_location=Config.DEVICE)
+        net.load_state_dict(data["model_state"])
+        optimizer.load_state_dict(data["optim_state"])
+    return net, optimizer
+
+
+def main(args):
+    manager = NetworkManager()
+
     net, optimizer = load_or_initialize_network(manager)
     buffer = ReplayBuffer()
 
     for g in range(args.games):
+
         print(f"Generating game {g + 1}/{args.games}...")
         for state, policy, value in run_self_play(
             net, num_simulations=args.simulations
@@ -144,9 +162,17 @@ def main(args):
     )
     print("✅ ONNX-Export abgeschlossen: nets/final_model.onnx")
 
+        for state, policy, value in run_self_play(net, num_simulations=args.simulations):
+            buffer.add(state, policy, value)
+    trainer = Trainer(net, buffer, optimizer, epochs=args.epochs)
+    trainer.train()
+    manager.save(net, optimizer, "latest")
+
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run minimal training loop")
+
     parser.add_argument(
         "--games",
         type=int,
@@ -165,3 +191,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     main(args)
+
+    parser.add_argument("--games", type=int, default=1, help="Number of self-play games")
+    parser.add_argument("--epochs", type=int, default=1, help="Training epochs")
+    parser.add_argument("--simulations", type=int, default=Config.NUM_SIMULATIONS, help="MCTS simulations")
+    main(parser.parse_args())
+

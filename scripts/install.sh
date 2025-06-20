@@ -5,7 +5,10 @@ set -e
 if [ -f "requirements.txt" ]; then
   echo "Installing Python requirements..."
   pip install -r requirements.txt
+
   pip install -e .
+
+
 fi
 
 # Optional build of the C++ superengine
@@ -14,6 +17,7 @@ if [ -d "superengine" ]; then
   cd superengine
   mkdir -p build
   cd build
+
   if [ -n "$ONNXRuntime_DIR" ]; then
     echo "Using ONNXRuntime from $ONNXRuntime_DIR"
     cmake .. -DONNXRuntime_DIR="$ONNXRuntime_DIR"
@@ -30,6 +34,10 @@ if [ -d "superengine" ]; then
   fi
   cmake --build . --parallel "$JOBS"
 
+
+
+  cmake ..
+  make -j$(nproc)
 
   cd ../..
 fi
