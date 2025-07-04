@@ -93,7 +93,7 @@ class Trainer:
         if len(self.buffer) < self.batch_size:
             return
 
-        scaler = GradScaler(device="cuda")
+        scaler = GradScaler(device_type="cuda")
         accumulation_steps = 4
 
         states, policies, values = self.buffer.sample(self.batch_size)

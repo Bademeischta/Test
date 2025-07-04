@@ -329,3 +329,7 @@ Repository verfolgen kannst.
 Prometheus liest die Metriken der Flask-App über `/metrics` aus. Die nötigen
 Kubernetes-Ressourcen befinden sich in `k8s/prometheus.yaml` und
 `k8s/grafana.yaml`.
+
+## Version History
+
+See [CHANGELOG.md](CHANGELOG.md) for a detailed history.

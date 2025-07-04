@@ -33,11 +33,13 @@ def load_or_initialize_network(manager: NetworkManager):
         num_blocks=Config.NUM_RES_BLOCKS,
         filters=Config.NUM_FILTERS,
     ).to(Config.DEVICE)
+    lr = float(getattr(Config, "LEARNING_RATE", 1e-3))
+    weight_decay = float(getattr(Config, "WEIGHT_DECAY", 0.0))
     optimizer = torch.optim.SGD(
         net.parameters(),
-        lr=Config.LEARNING_RATE,
+        lr=lr,
         momentum=Config.MOMENTUM,
-        weight_decay=Config.WEIGHT_DECAY,
+        weight_decay=weight_decay,
     )
     ckpt = manager.latest_checkpoint()
     if ckpt:

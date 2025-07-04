@@ -22,9 +22,18 @@ class MCTSNode:
         self.is_expanded = False
 
     def expand(self, policy, legal_moves):
-        for move in legal_moves:
-            idx = move_to_index(move)
-            self.P[move] = policy[idx]
+        """Expand the node by initializing children priors."""
+        if not legal_moves:
+            self.is_expanded = True
+            return
+
+        moves_idx = np.array([move_to_index(m) for m in legal_moves])
+        priors = policy[moves_idx].astype(float)
+        if priors.sum() > 0:
+            priors /= priors.sum()
+
+        for move, prior in zip(legal_moves, priors):
+            self.P[move] = float(prior)
             self.N[move] = 0
             self.W[move] = 0.0
             self.Q[move] = 0.0
