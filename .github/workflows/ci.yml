@@ -1,0 +1,37 @@
+name: CI
+on: [push, pull_request]
+
+jobs:
+  lint-test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python: [3.9, 3.10]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Cache pip
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+      - name: Cache torch
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/torch
+          key: ${{ runner.os }}-torch-${{ hashFiles('**/requirements.txt') }}
+      - name: Install deps
+        run: |
+          pip install --upgrade pip
+          pip install flake8 pydocstyle pytest
+          pip install -r requirements.txt
+      - name: Lint & Docstyle
+        run: |
+          flake8 src tests || flake8 chess_ai tests
+          pydocstyle src || pydocstyle chess_ai
+      - name: Test
+        run: pytest --maxfail=1 --disable-warnings -q
